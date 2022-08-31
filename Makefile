@@ -50,7 +50,7 @@ compile: $(TARGET)
 all: $(BUILD_DIR)/$(TARGET) upload
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
-	$(LD) $(LFLAGS) $(OBJECTS) -o $(@).elf
+	$(LD) $(LFLAGS) user_definitions.x $(OBJECTS) -o $(@).elf
 	msp430-objdump -Sd -W $(@).elf > $(@).lss
 	msp430-size $(@).elf
 	msp430-objcopy -O ihex $(@).elf $(@).hex
