@@ -56,6 +56,7 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	msp430-objcopy -O ihex $(@).elf $(@).hex
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@if [ ! -e build ]; then mkdir build; fi
 	$(CC) $(CFLAGS) -MD -MF $(subst src,build,$(subst .c,.d,$<)) $< -c -o $@
 
 # MSP430G2 Launchpad integrated with the eZ430-RF2500 USB Debugging Interface
