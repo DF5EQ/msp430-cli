@@ -15,9 +15,9 @@ SUPPORT_FILE_DIRECTORY := ~/tools/msp430-elf
 
 # Definition of compiler toolchain
 DEVICE  := msp430g2553
-CC      := msp430-elf-gcc
-LD      := msp430-elf-gcc
-GDB     := msp430-elf-gdb
+CC      := msp430-gcc -c
+LD      := msp430-gcc
+GDB     := msp430-gdb
 FLASH   := mspdebug
 
 #  Options for C Compiler
@@ -35,14 +35,14 @@ FLASH   := mspdebug
 CFLAGS =
 CFLAGS += -I $(SUPPORT_FILE_DIRECTORY)/include -I ./inc -L $(SUPPORT_FILE_DIRECTORY)/include -mmcu=$(DEVICE)
 CFLAGS += -O0 -g -ggdb -gdwarf-2
-CFLAGS += -Wall -Wextra -Wshadow -std=c99 -Wpedantic
+CFLAGS += -Wall -Wextra -Wshadow -std=c99
 
 #  Options for Linker
 #  Details:
 #     -nostartfiles: Do not use the standard system startup files when linking. The standard system libraries are used normally
 LFLAGS =
 LFLAGS += -L $(SUPPORT_FILE_DIRECTORY)/include -I $(SUPPORT_FILE_DIRECTORY)/include
-LFLAGS += -T msp430g2553.ld -mmcu=$(DEVICE)
+LFLAGS += -mmcu=$(DEVICE)
 LFLAGS += -Wl,-Map=$(BUILD_DIR)/$(TARGET).map
 
 compile: $(TARGET)
@@ -50,12 +50,13 @@ compile: $(TARGET)
 all: $(BUILD_DIR)/$(TARGET) upload
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
-	$(LD) $(LFLAGS) $(OBJECTS) -o $(@).elf
-	msp430-elf-objdump -Sd -W $(@).elf > $(@).lss
-	msp430-elf-size $(@).elf
-	msp430-elf-objcopy -O ihex $(@).elf $(@).hex
+	$(LD) $(LFLAGS) user_definitions.x $(OBJECTS) -o $(@).elf
+	msp430-objdump -Sd -W $(@).elf > $(@).lss
+	msp430-size $(@).elf
+	msp430-objcopy -O ihex $(@).elf $(@).hex
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@if [ ! -e build ]; then mkdir build; fi
 	$(CC) $(CFLAGS) -MD -MF $(subst src,build,$(subst .c,.d,$<)) $< -c -o $@
 
 # MSP430G2 Launchpad integrated with the eZ430-RF2500 USB Debugging Interface
