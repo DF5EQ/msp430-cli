@@ -52,10 +52,10 @@ static void CLI_Info(void);
  */
 static CLI_Command_t command_tbl[] =
 {
-    /* Command, Description,                    Command_Func */
-    { "help"  , "Show a list of command.",      CLI_Help     },
-    { "info"  , "Show all features of MCU",     CLI_Info     },
-    { "hello" , "Say Hello, World.",            CLI_Hello    }
+    /* Command, Description,                 Command_Func */
+    { "help"  , "Show a list of commands",   CLI_Help  },
+    { "info"  , "Show all features of MCU",  CLI_Info  },
+    { "hello" , "Say \"Hello, World\"",      CLI_Hello }
 };
 
 /**
