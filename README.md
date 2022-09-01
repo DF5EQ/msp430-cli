@@ -1,19 +1,19 @@
 # msp430-cli
 
-A Command Line Interface (CLI) for MSP430G2 LaunchPad
+A Command Line Interface (CLI) for MSP430FR5969 LaunchPad
 
 ## Environment
 
-* PC:        Kubuntu-18.04
-* Compiler:  msp430-elf-gcc
-* Flasher:   mspdebug
-* IDE:       None
-* Build:     Makefile
-* Serial Console: screen
+* PC:             Linux Mint 20.3 Una 64-bit
+* Compiler:       msp430-gcc
+* Flasher:        mspdebug
+* IDE:            None
+* Build:          Makefile
+* Serial Console: GTKTerm
 
 ## How to compile and upload the program
 
-To compile and load program into the board, you need to install some requisite tools such as: *msp430-elf-gcc*, *mspdebug* and *make*.
+To compile and load program into the board, you need to install some requisite tools such as: *msp430-gcc*, *mspdebug* and *make*.
 After above tools have already installed completely, you perform the guide as follows:
 
 * Compile and upload the program on MCU
@@ -50,10 +50,10 @@ After above tools have already installed completely, you perform the guide as fo
   make clean
   ```
 
-* Using the *screen* for serial interface
+* Using the serial interface
 
   ```shell
-  sudo screen /dev/ttyACM0 -b 9600
+  gtkterm -s 9600 -p /dev/ttyACM1
   ```
 
 ## Screenshot
