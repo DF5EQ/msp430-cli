@@ -165,8 +165,8 @@ static void startup_cli(void)
     printf("\tMCU:                     MSP430FR5969\r\n");
     printf("\tFRAM:                    64kB\r\n");
     printf("\tFRAM used:               %u\r\n", __m_flash_size);
-    printf("\tRAM:                     2kB\r\n");
-    printf("\tRAM used:                %u\r\n", __m_ram_size);
+    printf("\tSRAM:                    2kB\r\n");
+    printf("\tSRAM used:               %u\r\n", __m_ram_size);
     printf("\tMain clock (MCLK):       16MHz\r\n");
     printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
@@ -224,15 +224,17 @@ static void CLI_Hello(void)
 static void CLI_Info(void)
 {
     printf("\r\n<< Device Info >>");
-    printf("\r\n\tCPU:             msp430g2553 @ 16bit RISC Architecture");
+    printf("\r\n\tCPU:             MSP430FR5969");
     printf("\r\n\tArchitecture:    16bit RISC Architecture");
     printf("\r\n\tCPU clock:       16MHz");
-    printf("\r\n\tFlash:           16kB");
-    printf("\r\n\tRAM:             512B");
-    printf("\r\n\tI/O:             16 I/O Pins");
-    printf("\r\n\tTimer:           Two 16-bit Timer_A");
-    printf("\r\n\tADC:             10-bit 200-ksps");
-    printf("\r\n\tComunication:    I2C/SPI/UART");
+    printf("\r\n\tFRAM:            64kB");
+    printf("\r\n\tSRAM:            2kB");
+    printf("\r\n\tADC:             12-bit, 16 ext, 2 int channels");
+    printf("\r\n\tComparator:      16 channels");
+    printf("\r\n\tTimer:           2 Timer A, 7 Timer B");
+    printf("\r\n\tComunication:    2 I2C/SPI/UART");
+    printf("\r\n\tAES:             yes");
+    printf("\r\n\tBSL:             UART");
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
 }
 
