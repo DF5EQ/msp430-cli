@@ -215,7 +215,7 @@ static void CLI_Hello(void)
 {
     /* Say "Hello, World!"" */
     printf("\r\nHello, World!");
-    printf("\r\nI'm Nhi Pham. You'll find me on Earth.");
+    printf("\r\nI'm Peter. You'll find me on Earth.");
 }
 
 /**
