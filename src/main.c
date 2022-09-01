@@ -158,16 +158,17 @@ static void startup_cli(void)
 {
     printf("\r\n");
     printf("*----------------------------------------*\r\n");
-    printf("*         MSP-EXP430G2 LaunchPad         *\r\n");
+    printf("*         MSP-EXP430FR5969 LaunchPad     *\r\n");
     printf("*         Command Line Interface         *\r\n");
     printf("*----------------------------------------*\r\n");
     printf("\n<< System Info >>\r\n");
-    printf("\tMCU:                     MSP430G2553\r\n");
-    printf("\tFLASH:                   16kB\r\n");
-    printf("\tFLASH used:              %u\r\n", __m_flash_size);
-    printf("\tRAM:                     512B\r\n");
+    printf("\tMCU:                     MSP430FR5969\r\n");
+    printf("\tFRAM:                    64kB\r\n");
+    printf("\tFRAM used:               %u\r\n", __m_flash_size);
+    printf("\tRAM:                     2kB\r\n");
     printf("\tRAM used:                %u\r\n", __m_ram_size);
-    printf("\tSystem clock:            1MHz\r\n");
+    printf("\tMain clock (MCLK):       16MHz\r\n");
+    printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
     printf("\r\n\r\nMSP430@CLI > ");
 }
