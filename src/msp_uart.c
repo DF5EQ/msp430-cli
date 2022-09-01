@@ -19,15 +19,22 @@
  */
 void uart_init(void)
 {
-    /* Configure hardware UART */
-    P1SEL = BIT1 + BIT2 ;  // P1.1 = RXD, P1.2=TXD
-    P1SEL2 = BIT1 + BIT2 ; // P1.1 = RXD, P1.2=TXD
-    UCA0CTL1 |= UCSSEL_2;  // Use SMCLK
-    UCA0BR0 = 104;         // Set baud rate to 9600 with 1MHz clock (Data Sheet 15.3.13)
-    UCA0BR1 = 0;           // Set baud rate to 9600 with 1MHz clock
-    UCA0MCTL = UCBRS0;     // Modulation UCBRSx = 1
-    UCA0CTL1 &= ~UCSWRST;  // Initialize USCI state machine
-    IE2 |= UCA0RXIE;       // Enable USCI_A0 RX interrupt
+    /* attach port pins to UART eUSCI_A0 */
+    P2SEL1 |=   BIT0 | BIT1;
+    P2SEL0 &= ~(BIT0 | BIT1);
+
+    /* configure eUSCI_A0 for UART mode 9600 8N1 */
+    UCA0CTLW0  = UCSWRST;                  /* put eUSCI_A0 in reset */
+                                           /* sets  : UCTXIFG */
+                                           /* clears: UCRXIE, UCTXIE, UCRXIFG */
+    UCA0CTLW0 |= UCSSEL__SMCLK;            /* BRCLK = SMCLK */
+    UCA0BR0    = 6;                        /* see SLAU367P table 30-5 for */
+    UCA0BR1    = 0;                        /* BRCLK = 1MHz    */
+    UCA0MCTLW  = UCBRS5 | UCBRF3 | UCOS16; /* Baudrate = 9600 */
+    UCA0CTLW0 &= ~UCSWRST;                 /* release eUSCI_A0 from reset */
+
+    /* enable receive interrupt */
+    UCA0IE |= UCRXIE;
 }
 
 /**
@@ -35,7 +42,7 @@ void uart_init(void)
  */
 void uart_putc(unsigned char character)
 {
-    while (!(IFG2 & UCA0TXIFG)); // USCI_A0 TX buffer ready?
+    while (!(UCA0IFG & UCTXIFG)); // USCI_A0 TX buffer ready?
     UCA0TXBUF = character;       // TX -> RXed character
 }
 
