@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2018  nhivp
+ *               2022  Peter Bägel (DF5EQ)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,9 +15,8 @@
 
 #ifndef _MSP_UART_H_
 #define _MSP_UART_H_
-#include <msp430.h>
 
-#define UART_RX_VECTOR  USCIAB0RX_VECTOR
+#include <msp430.h>
 
 extern void uart_init(void);
 extern void uart_putc(unsigned char character);

@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2018  nhivp
+ *               2022  Peter Bägel (DF5EQ)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,11 +14,11 @@
  */
 
 #include <msp430.h>
-#include "msp_printf.h"
-#include "msp_uart.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include "msp_printf.h"
+#include "msp_uart.h"
 
 /**
  *  Typedef definition
