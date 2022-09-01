@@ -14,7 +14,7 @@
 
 #ifndef _MSP_UART_H_
 #define _MSP_UART_H_
-#include "msp430g2553.h"
+#include <msp430.h>
 
 #define UART_RX_VECTOR  USCIAB0RX_VECTOR
 

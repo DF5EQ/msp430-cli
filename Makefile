@@ -10,11 +10,8 @@ BUILD_DIR := build
 SRC_DIR   := src
 TARGET    := cli_main
 
-# The support files consist of linker script (*.ld), include header files and devices.csv.
-SUPPORT_FILE_DIRECTORY := ~/tools/msp430-elf
-
 # Definition of compiler toolchain
-DEVICE  := msp430g2553
+DEVICE  := msp430fr5969
 CC      := msp430-gcc -c
 LD      := msp430-gcc
 GDB     := msp430-gdb
@@ -33,7 +30,8 @@ FLASH   := mspdebug
 #                  For more information --> http://www.keil.com/support/man/docs/armclang_ref/armclang_ref_chr1409753002958.htm
 #      --gc-sections: Remove unused sections
 CFLAGS =
-CFLAGS += -I $(SUPPORT_FILE_DIRECTORY)/include -I ./inc -L $(SUPPORT_FILE_DIRECTORY)/include -mmcu=$(DEVICE)
+CFLAGS += -mmcu=$(DEVICE)
+CFLAGS += -I ./inc
 CFLAGS += -O0 -g -ggdb -gdwarf-2
 CFLAGS += -Wall -Wextra -Wshadow -std=c99
 
@@ -41,7 +39,6 @@ CFLAGS += -Wall -Wextra -Wshadow -std=c99
 #  Details:
 #     -nostartfiles: Do not use the standard system startup files when linking. The standard system libraries are used normally
 LFLAGS =
-LFLAGS += -L $(SUPPORT_FILE_DIRECTORY)/include -I $(SUPPORT_FILE_DIRECTORY)/include
 LFLAGS += -mmcu=$(DEVICE)
 LFLAGS += -Wl,-Map=$(BUILD_DIR)/$(TARGET).map
 
@@ -59,14 +56,8 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@if [ ! -e build ]; then mkdir build; fi
 	$(CC) $(CFLAGS) -MD -MF $(subst src,build,$(subst .c,.d,$<)) $< -c -o $@
 
-# MSP430G2 Launchpad integrated with the eZ430-RF2500 USB Debugging Interface
-# Options:
-#       --force-reset:  When using a FET device, always send a reset during initialization.
-#                       By default, an initialization without reset will be tried first.
-#       rf2500:         Connect to an eZ430-RF2500, Launchpad or Chronos device. Only USB connection is supported.
-# For more information: http://manpages.ubuntu.com/manpages/xenial/man1/mspdebug.1.html
 upload:
-	$(FLASH) --force-reset rf2500 "prog $(BUILD_DIR)/$(TARGET).elf"
+	$(FLASH) tilib "prog $(BUILD_DIR)/$(TARGET).elf"
 
 debug:
 	clear

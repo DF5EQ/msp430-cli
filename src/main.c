@@ -12,6 +12,7 @@
  * GNU General Public License for more details.
  */
 
+#include <msp430.h>
 #include "msp_printf.h"
 #include "msp_uart.h"
 #include <stdint.h>
@@ -51,10 +52,10 @@ static void CLI_Info(void);
  */
 static CLI_Command_t command_tbl[] =
 {
-    /* Command, Description,                    Command_Func */
-    { "help"  , "Show a list of command.",      CLI_Help     },
-    { "info"  , "Show all features of MCU",     CLI_Info     },
-    { "hello" , "Say Hello, World.",            CLI_Hello    }
+    /* Command, Description,                 Command_Func */
+    { "help"  , "Show a list of commands",   CLI_Help  },
+    { "info"  , "Show all features of MCU",  CLI_Info  },
+    { "hello" , "Say \"Hello, World\"",      CLI_Hello }
 };
 
 /**
@@ -128,14 +129,26 @@ int main(void)
 }
 
 /**
- * Initialize the board MSP430G2 LaunchPad
+ * Initialize the board MSP430FR5969 LaunchPad
  */
 static void board_init(void)
 {
-    WDTCTL = WDTPW + WDTHOLD; // Stop WDT
-    /* Load calibrated DCO vlues to set CPU clock to 1MHz */
-    BCSCTL1 = CALBC1_1MHZ;    // Set DCO to 1MHz
-    DCOCTL = CALDCO_1MHZ;     // Set DCO to 1MHz
+    /* disable watchdog */
+    WDTCTL = WDTPW + WDTHOLD;
+
+    /* unlock ports */
+    PM5CTL0 &= ~LOCKLPM5;
+
+    /* initialise FRAM for 16MHz operation */
+    FRCTL0   = FWPW;      /* unlock FR registers */
+    FRCTL0_L = NACCESS_1; /* for MCLK = 16MHz we need one wait state for FRAM access */
+    FRCTL0_H = 0;         /* lock FR registers */
+
+    /* set MCLK = 16Mhz, SMCLK = 1MHz */
+    CSCTL0   = CSKEY;                        /* unlock CS registers */
+    CSCTL1   = DCOFSEL_4 | DCORSEL;          /* set DCO to 16MHz */
+    CSCTL3   = DIVA__1 | DIVS__16 | DIVM__1; /* ACLK divider = 1, SMCLK divider = 16, MCLK divider = 1 */
+    CSCTL0_H = 0;                            /* lock CS registers */
 }
 
 /**
@@ -145,16 +158,17 @@ static void startup_cli(void)
 {
     printf("\r\n");
     printf("*----------------------------------------*\r\n");
-    printf("*         MSP-EXP430G2 LaunchPad         *\r\n");
+    printf("*         MSP-EXP430FR5969 LaunchPad     *\r\n");
     printf("*         Command Line Interface         *\r\n");
     printf("*----------------------------------------*\r\n");
     printf("\n<< System Info >>\r\n");
-    printf("\tMCU:                     MSP430G2553\r\n");
-    printf("\tFLASH:                   16kB\r\n");
-    printf("\tFLASH used:              %u\r\n", __m_flash_size);
-    printf("\tRAM:                     512B\r\n");
-    printf("\tRAM used:                %u\r\n", __m_ram_size);
-    printf("\tSystem clock:            1MHz\r\n");
+    printf("\tMCU:                     MSP430FR5969\r\n");
+    printf("\tFRAM:                    64kB\r\n");
+    printf("\tFRAM used:               %u\r\n", __m_flash_size);
+    printf("\tSRAM:                    2kB\r\n");
+    printf("\tSRAM used:               %u\r\n", __m_ram_size);
+    printf("\tMain clock (MCLK):       16MHz\r\n");
+    printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
     printf("\r\n\r\nMSP430@CLI > ");
 }
@@ -201,7 +215,7 @@ static void CLI_Hello(void)
 {
     /* Say "Hello, World!"" */
     printf("\r\nHello, World!");
-    printf("\r\nI'm Nhi Pham. You'll find me on Earth.");
+    printf("\r\nI'm Peter. You'll find me on Earth.");
 }
 
 /**
@@ -210,23 +224,25 @@ static void CLI_Hello(void)
 static void CLI_Info(void)
 {
     printf("\r\n<< Device Info >>");
-    printf("\r\n\tCPU:             msp430g2553 @ 16bit RISC Architecture");
+    printf("\r\n\tCPU:             MSP430FR5969");
     printf("\r\n\tArchitecture:    16bit RISC Architecture");
     printf("\r\n\tCPU clock:       16MHz");
-    printf("\r\n\tFlash:           16kB");
-    printf("\r\n\tRAM:             512B");
-    printf("\r\n\tI/O:             16 I/O Pins");
-    printf("\r\n\tTimer:           Two 16-bit Timer_A");
-    printf("\r\n\tADC:             10-bit 200-ksps");
-    printf("\r\n\tComunication:    I2C/SPI/UART");
+    printf("\r\n\tFRAM:            64kB");
+    printf("\r\n\tSRAM:            2kB");
+    printf("\r\n\tADC:             12-bit, 16 ext, 2 int channels");
+    printf("\r\n\tComparator:      16 channels");
+    printf("\r\n\tTimer:           2 Timer A, 7 Timer B");
+    printf("\r\n\tComunication:    2 I2C/SPI/UART");
+    printf("\r\n\tAES:             yes");
+    printf("\r\n\tBSL:             UART");
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
 }
 
 /**************************************************
  * Interrupt Handler
  **************************************************/
-__attribute__ ((interrupt(UART_RX_VECTOR)))
-void UART_RX_ISR(void)
+#pragma vector = USCI_A0_VECTOR
+__interrupt void uart_interrupt (void)
 {
     parameterString[parameterLength] = uart_getc();
     uart_putc(parameterString[parameterLength]); /* Echo */
