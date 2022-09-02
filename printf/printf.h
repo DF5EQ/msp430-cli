@@ -13,14 +13,12 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _MSP_UART_H_
-#define _MSP_UART_H_
+#ifndef PRINTF_H_
+#define PRINTF_H_
+#include "uart.h"
 
-#include <msp430.h>
+#define printf     printformat
 
-extern void uart_init(void);
-extern void uart_putc(unsigned char character);
-extern void uart_puts(char* s);
-extern unsigned char uart_getc(void);
+extern void printformat(char *format, ...);
 
-#endif /* _MSP_UART_H_ */
+#endif /* PRINTF_H_ */

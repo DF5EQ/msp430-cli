@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2018  nhivp
+ *               2022  Peter Bägel (DF5EQ)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,8 +13,8 @@
  * GNU General Public License for more details.
  */
 
-#include "msp_printf.h"
-#include "stdarg.h"
+#include "printf.h"
+#include <stdarg.h>
 
 static void xtoa(unsigned long x, int width, const int *wp, const unsigned long *dp);
 static void puth(unsigned n);
