@@ -118,7 +118,7 @@ int main(void)
                 }
             }
 
-            printf("\r\nmsp430-CLI > ");
+            printf("\r\nmsp430-cli > ");
 
             /* Reset receive buffer and flag*/
             memset(parameterString, '\0', parameterLength + 1);
@@ -171,7 +171,7 @@ static void startup_cli(void)
     printf("\tMain clock (MCLK):       16MHz\r\n");
     printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
-    printf("\r\n\r\nmsp430-CLI > ");
+    printf("\r\n\r\nmsp430-cli > ");
 }
 
 /**
