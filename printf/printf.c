@@ -1,4 +1,5 @@
-/**
+/* ===== file header ===== */
+/*
  * Copyright (C) 2018  nhivp
  *               2022  Peter Bägel (DF5EQ)
  *
@@ -13,12 +14,13 @@
  * GNU General Public License for more details.
  */
 
-#include "printf.h"
+/* ===== includes ===== */
 #include <stdarg.h>
+#include "printf.h"
 
-static void xtoa(unsigned long x, int width, const int *wp, const unsigned long *dp);
-static void puth(unsigned n);
+/* ===== private symbols ===== */
 
+/* ===== private constants ===== */
 static const unsigned long dv[] =
 {
     // 4294967296 // 32 bit unsigned max
@@ -51,6 +53,11 @@ static const int dw[] =
     1, // +9
 };
 
+/* ===== private variables ===== */
+
+/* ===== public variables ===== */
+
+/* ===== private functions ===== */
 static void xtoa(unsigned long x, int width, const int *wp, const unsigned long *dp)
 {
     char c;
@@ -85,6 +92,7 @@ static void puth(unsigned n)
     uart_putc(hex[n & 15]);
 }
 
+/* ===== public functions ===== */
 void printformat(char *format, ...)
 {
     char formatChar;

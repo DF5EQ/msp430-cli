@@ -1,4 +1,5 @@
-/**
+/* ===== file header ===== */
+/*
  * Copyright (C) 2018  nhivp
  *               2022  Peter Bägel (DF5EQ)
  *
@@ -15,10 +16,20 @@
 
 #ifndef PRINTF_H_
 #define PRINTF_H_
+
+/* ===== includes ===== */
 #include "uart.h"
 
+/* ===== public datatypes ===== */
+
+/* ===== public symbols ===== */
 #define printf     printformat
 
-extern void printformat(char *format, ...);
+/* ===== public constants ===== */
+
+/* ===== public variables ===== */
+
+/* ===== public functions ===== */
+void printformat(char *format, ...);
 
 #endif /* PRINTF_H_ */
