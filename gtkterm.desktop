@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Serial port terminal
+Comment=Communicate with the serial port
+Exec=gtkterm -s 9600 -p /dev/ttyACM1
+Terminal=false
+Type=Application
+Icon=gtkterm.png
+Categories=GNOME;Application;Utility;Development;Electronics;
