@@ -1,4 +1,5 @@
-/**
+/* ===== file header ===== */
+/*
  * Copyright (C) 2018  nhivp
  *               2022  Peter Bägel (DF5EQ)
  *
@@ -13,11 +14,26 @@
  * GNU General Public License for more details.
  */
 
+/* ===== includes ===== */
 #include "uart.h"
 
-/**
- * Initialize UART
- */
+/* ===== private datatypes ===== */
+
+/* ===== private symbols ===== */
+
+/* ===== private constants ===== */
+
+/* ===== public constants ===== */
+
+/* ===== private variables ===== */
+
+/* ===== public variables ===== */
+
+/* ===== private functions ===== */
+
+/* ===== public functions ===== */
+
+/* ----- initialize UART ----- */
 void uart_init(void)
 {
     /* attach port pins to UART eUSCI_A0 */
@@ -38,18 +54,14 @@ void uart_init(void)
     UCA0IE |= UCRXIE;
 }
 
-/**
- * Send a single byte out through UART
- */
+/* ----- send a single byte out through UART ----- */
 void uart_putc(unsigned char character)
 {
     while (!(UCA0IFG & UCTXIFG)); // USCI_A0 TX buffer ready?
     UCA0TXBUF = character;       // TX -> RXed character
 }
 
-/**
- * Sends a string out through UART
- */
+/* ----- sends a string out through UART ----- */
 void uart_puts(char* s)
 {
     while (*s != '\0')
@@ -59,9 +71,7 @@ void uart_puts(char* s)
     }
 }
 
-/**
- * Receive a single byte out through UART
- */
+/* ----- receive a single byte out through UART ----- */
 unsigned char uart_getc(void)
 {
     return UCA0RXBUF;

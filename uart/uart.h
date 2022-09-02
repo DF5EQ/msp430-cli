@@ -1,4 +1,5 @@
-/**
+/* ===== file header ===== */
+/*
  * Copyright (C) 2018  nhivp
  *               2022  Peter Bägel (DF5EQ)
  *
@@ -16,11 +17,21 @@
 #ifndef UART_H_
 #define UART_H_
 
+/* ===== includes ===== */
 #include <msp430.h>
 
-extern void uart_init(void);
-extern void uart_putc(unsigned char character);
-extern void uart_puts(char* s);
-extern unsigned char uart_getc(void);
+/* ===== public datatypes ===== */
+
+/* ===== public symbols ===== */
+
+/* ===== public constants ===== */
+
+/* ===== public variables ===== */
+
+/* ===== public functions ===== */
+void uart_init(void);
+void uart_putc(unsigned char character);
+void uart_puts(char* s);
+unsigned char uart_getc(void);
 
 #endif /* UART_H_ */
