@@ -1,4 +1,5 @@
-/**
+/* ===== file header ===== */
+/*
  * Copyright (C) 2018  nhivp
  *               2022  Peter Bägel (DF5EQ)
  *
@@ -13,6 +14,7 @@
  * GNU General Public License for more details.
  */
 
+/* ===== includes ===== */
 #include <msp430.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -20,9 +22,7 @@
 #include "printf.h"
 #include "uart.h"
 
-/**
- *  Typedef definition
- */
+/* ===== private datatypes ===== */
 typedef void (*CLI_Command_Function_t)(void);
 
 typedef struct
@@ -32,25 +32,21 @@ typedef struct
     CLI_Command_Function_t Command_Func;
 } CLI_Command_t;
 
-/**
- *  Macro definition
- */
-#define COMMAND_LEN(x)            sizeof(x)/sizeof(*(&x[0]))
-#define COMMAND_STRING_LEN        128
+/* ===== private symbols ===== */
+#define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
+#define COMMAND_STRING_LEN 128
 
-/**
- * Private function prototypes
- */
-static void board_init(void);
-static void startup_cli(void);
-static void CLI_GetCommand(unsigned char* cmd);
+/* ===== private constants ===== */
+
+/* ===== public constants ===== */
+
+/* ===== private variables ===== */
+
+/* needed forward declarations */
 static void CLI_Help(void);
-static void CLI_Hello(void);
 static void CLI_Info(void);
+static void CLI_Hello(void);
 
-/**
- *  Private variables
- */
 static CLI_Command_t command_tbl[] =
 {
     /* Command, Description,                 Command_Func */
@@ -59,79 +55,20 @@ static CLI_Command_t command_tbl[] =
     { "hello" , "Say \"Hello, World\"",      CLI_Hello }
 };
 
-/**
- *  Exported variables
- */
+/* ===== public variables ===== */
+
+/* provided public variables */
 unsigned char parameterString[COMMAND_STRING_LEN];
-uint8_t parameterLength;
+uint8_t       parameterLength;
 volatile bool validCommandFlag;
+
+/* consumed public variables */
 extern volatile uint16_t __m_flash_size;
 extern volatile uint16_t __m_ram_size;
 
-/**
- * Main App
- */
-int main(void)
-{
-    unsigned char cmd[32];
-    uint8_t cmd_idx;
+/* ===== private functions ===== */
 
-    board_init();
-    uart_init();
-    memset(parameterString, '\0', COMMAND_STRING_LEN);
-    memset(cmd, '\0', 32);
-
-    /* Show banner */
-    startup_cli();
-    /* Enable interrupt */
-    __bis_SR_register(GIE);
-
-    while (1)
-    {
-        /* The 'validCommandFlag' is true when the user enter an input command from console */
-        while (validCommandFlag)
-        {
-            CLI_GetCommand(cmd);
-
-            if (cmd[0] == '\0')
-            {
-                printf("\r\nMissing command!");
-            }
-            else
-            {
-                for (cmd_idx = 0; cmd_idx < COMMAND_LEN(command_tbl); cmd_idx++)
-                {
-                    if (!strcmp((char*)cmd, (char*)command_tbl[cmd_idx].Command))
-                    {
-                        break;
-                    }
-                }
-
-                if (cmd_idx < COMMAND_LEN(command_tbl))
-                {
-                    /* Execute command */
-                    command_tbl[cmd_idx].Command_Func();
-                }
-                else
-                {
-                    printf("\r\nInvalid command!");
-                }
-            }
-
-            printf("\r\nmsp430-cli > ");
-
-            /* Reset receive buffer and flag*/
-            memset(parameterString, '\0', parameterLength + 1);
-            memset(cmd, '\0', 32);
-            parameterLength = 0;
-            validCommandFlag = false;
-        }
-    }
-}
-
-/**
- * Initialize the board MSP430FR5969 LaunchPad
- */
+/* ----- setup board ----- */
 static void board_init(void)
 {
     /* disable watchdog */
@@ -152,9 +89,7 @@ static void board_init(void)
     CSCTL0_H = 0;                            /* lock CS registers */
 }
 
-/**
- * Start CLI
- */
+/* ----- start CLI ----- */
 static void startup_cli(void)
 {
     printf("\r\n");
@@ -174,9 +109,7 @@ static void startup_cli(void)
     printf("\r\n\r\nmsp430-cli > ");
 }
 
-/**
- *  Get a command from the input string.
- */
+/* ----- get a command from the input string ----- */
 static void CLI_GetCommand(unsigned char* cmd)
 {
     uint8_t cmd_len;
@@ -193,9 +126,7 @@ static void CLI_GetCommand(unsigned char* cmd)
     }
 }
 
-/**
- * Command executing: help
- */
+/* ----- command executing: help ----- */
 static void CLI_Help(void)
 {
     uint8_t i;
@@ -209,9 +140,7 @@ static void CLI_Help(void)
     printf("\r\n");
 }
 
-/**
- * Command executing: hello
- */
+/*----- command executing: hello ----- */
 static void CLI_Hello(void)
 {
     /* Say "Hello, World!"" */
@@ -219,9 +148,7 @@ static void CLI_Hello(void)
     printf("\r\nI'm Peter. You'll find me on Earth.");
 }
 
-/**
- * Command executing: info
- */
+/* ----- command executing: info ----- */
 static void CLI_Info(void)
 {
     printf("\r\n<< Device Info >>");
@@ -239,9 +166,9 @@ static void CLI_Info(void)
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
 }
 
-/**************************************************
- * Interrupt Handler
- **************************************************/
+/* ===== interrupt functions ===== */
+
+/* ----- uart receive interrupt ----- */
 #pragma vector = USCI_A0_VECTOR
 __interrupt void uart_interrupt (void)
 {
@@ -254,3 +181,64 @@ __interrupt void uart_interrupt (void)
         validCommandFlag = true;
     }
 }
+
+/* ===== public functions ===== */
+
+int main(void)
+{
+    unsigned char cmd[32];
+    uint8_t cmd_idx;
+
+    board_init();
+    uart_init();
+    memset(parameterString, '\0', COMMAND_STRING_LEN);
+    memset(cmd, '\0', 32);
+
+    /* show banner */
+    startup_cli();
+    /* enable interrupt */
+    __bis_SR_register(GIE);
+
+    while (1)
+    {
+        /* 'validCommandFlag' is true when the user enters an input command from console */
+        while (validCommandFlag)
+        {
+            CLI_GetCommand(cmd);
+
+            if (cmd[0] == '\0')
+            {
+                printf("\r\nMissing command!");
+            }
+            else
+            {
+                for (cmd_idx = 0; cmd_idx < COMMAND_LEN(command_tbl); cmd_idx++)
+                {
+                    if (!strcmp((char*)cmd, (char*)command_tbl[cmd_idx].Command))
+                    {
+                        break;
+                    }
+                }
+
+                if (cmd_idx < COMMAND_LEN(command_tbl))
+                {
+                    /* execute command */
+                    command_tbl[cmd_idx].Command_Func();
+                }
+                else
+                {
+                    printf("\r\nInvalid command!");
+                }
+            }
+
+            printf("\r\nmsp430-cli > ");
+
+            /* reset receive buffer and flag */
+            memset(parameterString, '\0', parameterLength + 1);
+            memset(cmd, '\0', 32);
+            parameterLength = 0;
+            validCommandFlag = false;
+        }
+    }
+}
+
