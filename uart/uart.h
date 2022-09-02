@@ -34,4 +34,6 @@ void uart_putc(unsigned char character);
 void uart_puts(char* s);
 unsigned char uart_getc(void);
 
+int putchar (int byte);
+
 #endif /* UART_H_ */

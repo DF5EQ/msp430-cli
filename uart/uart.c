@@ -66,7 +66,7 @@ void uart_puts(char* s)
 {
     while (*s != '\0')
     {
-        uart_putc(*s);
+        putchar(*s);
         s++;
     }
 }
@@ -75,4 +75,16 @@ void uart_puts(char* s)
 unsigned char uart_getc(void)
 {
     return UCA0RXBUF;
+}
+
+/* ----- send a byte ----- */
+int putchar (int byte)
+{
+    /* wait until TX buffer empty */
+    while (!(UCA0IFG & UCTXIFG));
+
+    /* send byte */
+    UCA0TXBUF = byte;
+
+    return 0;
 }
