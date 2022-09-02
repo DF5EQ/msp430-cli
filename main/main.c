@@ -18,8 +18,8 @@
 #include <msp430.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
-#include "printf.h"
 #include "uart.h"
 
 /* ===== private datatypes ===== */
@@ -100,9 +100,9 @@ static void startup_cli(void)
     printf("\n<< System Info >>\r\n");
     printf("\tMCU:                     MSP430FR5969\r\n");
     printf("\tFRAM:                    64kB\r\n");
-    printf("\tFRAM used:               %u\r\n", __m_flash_size);
+    printf("\tFRAM used:               %u\r\n", &__m_flash_size);
     printf("\tSRAM:                    2kB\r\n");
-    printf("\tSRAM used:               %u\r\n", __m_ram_size);
+    printf("\tSRAM used:               %u\r\n", &__m_ram_size);
     printf("\tMain clock (MCLK):       16MHz\r\n");
     printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
@@ -173,7 +173,7 @@ static void CLI_Info(void)
 __interrupt void uart_interrupt (void)
 {
     parameterString[parameterLength] = uart_getc();
-    uart_putc(parameterString[parameterLength]); /* Echo */
+    putchar(parameterString[parameterLength]); /* Echo */
 
     /* Also get the characters '\r\n' */
     if (parameterString[parameterLength++] == '\r')

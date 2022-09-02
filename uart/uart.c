@@ -54,25 +54,20 @@ void uart_init(void)
     UCA0IE |= UCRXIE;
 }
 
-/* ----- send a single byte out through UART ----- */
-void uart_putc(unsigned char character)
-{
-    while (!(UCA0IFG & UCTXIFG)); // USCI_A0 TX buffer ready?
-    UCA0TXBUF = character;       // TX -> RXed character
-}
-
-/* ----- sends a string out through UART ----- */
-void uart_puts(char* s)
-{
-    while (*s != '\0')
-    {
-        uart_putc(*s);
-        s++;
-    }
-}
-
 /* ----- receive a single byte out through UART ----- */
 unsigned char uart_getc(void)
 {
     return UCA0RXBUF;
+}
+
+/* ----- send a byte ----- */
+int putchar (int byte)
+{
+    /* wait until TX buffer empty */
+    while (!(UCA0IFG & UCTXIFG));
+
+    /* send byte */
+    UCA0TXBUF = byte;
+
+    return 0;
 }
