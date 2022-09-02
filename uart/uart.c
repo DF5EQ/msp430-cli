@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#include "msp_uart.h"
+#include "uart.h"
 
 /**
  * Initialize UART

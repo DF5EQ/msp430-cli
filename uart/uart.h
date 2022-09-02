@@ -1,5 +1,6 @@
 /**
  * Copyright (C) 2018  nhivp
+ *               2022  Peter Bägel (DF5EQ)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,12 +13,14 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _MSP_PRINTF_H_
-#define _MSP_PRINTF_H_
-#include "msp_uart.h"
+#ifndef UART_H_
+#define UART_H_
 
-#define printf     printformat
+#include <msp430.h>
 
-extern void printformat(char *format, ...);
+extern void uart_init(void);
+extern void uart_putc(unsigned char character);
+extern void uart_puts(char* s);
+extern unsigned char uart_getc(void);
 
-#endif /* _MSP_PRINTF_H_ */
+#endif /* UART_H_ */
