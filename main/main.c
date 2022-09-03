@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "led.h"
 #include "uart.h"
 
 /* ===== private datatypes ===== */
@@ -190,6 +191,7 @@ int main(void)
     uint8_t cmd_idx;
 
     board_init();
+    led_init();
     uart_init();
     memset(parameterString, '\0', COMMAND_STRING_LEN);
     memset(cmd, '\0', 32);
@@ -199,11 +201,16 @@ int main(void)
     /* enable interrupt */
     __bis_SR_register(GIE);
 
+    led_on(LED_GREEN);
+
     while (1)
     {
         /* 'validCommandFlag' is true when the user enters an input command from console */
         while (validCommandFlag)
         {
+            led_on(LED_RED);
+            led_off(LED_GREEN);
+
             CLI_GetCommand(cmd);
 
             if (cmd[0] == '\0')
@@ -238,6 +245,9 @@ int main(void)
             memset(cmd, '\0', 32);
             parameterLength = 0;
             validCommandFlag = false;
+
+            led_off(LED_RED);
+            led_on(LED_GREEN);
         }
     }
 }
