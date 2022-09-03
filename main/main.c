@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "system.h"
 #include "led.h"
 #include "uart.h"
 
@@ -68,27 +69,6 @@ extern volatile uint16_t __m_flash_size;
 extern volatile uint16_t __m_ram_size;
 
 /* ===== private functions ===== */
-
-/* ----- setup board ----- */
-static void board_init(void)
-{
-    /* disable watchdog */
-    WDTCTL = WDTPW + WDTHOLD;
-
-    /* unlock ports */
-    PM5CTL0 &= ~LOCKLPM5;
-
-    /* initialise FRAM for 16MHz operation */
-    FRCTL0   = FWPW;      /* unlock FR registers */
-    FRCTL0_L = NACCESS_1; /* for MCLK = 16MHz we need one wait state for FRAM access */
-    FRCTL0_H = 0;         /* lock FR registers */
-
-    /* set MCLK = 16Mhz, SMCLK = 1MHz */
-    CSCTL0   = CSKEY;                        /* unlock CS registers */
-    CSCTL1   = DCOFSEL_4 | DCORSEL;          /* set DCO to 16MHz */
-    CSCTL3   = DIVA__1 | DIVS__16 | DIVM__1; /* ACLK divider = 1, SMCLK divider = 16, MCLK divider = 1 */
-    CSCTL0_H = 0;                            /* lock CS registers */
-}
 
 /* ----- start CLI ----- */
 static void startup_cli(void)
@@ -190,7 +170,7 @@ int main(void)
     unsigned char cmd[32];
     uint8_t cmd_idx;
 
-    board_init();
+    system_init();
     led_init();
     uart_init();
     memset(parameterString, '\0', COMMAND_STRING_LEN);
