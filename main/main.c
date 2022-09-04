@@ -148,7 +148,7 @@ static void CLI_Info(void)
 }
 
 /* ===== interrupt functions ===== */
-
+#if 0
 /* ----- uart receive interrupt ----- */
 #pragma vector = USCI_A0_VECTOR
 __interrupt void uart_interrupt (void)
@@ -162,7 +162,7 @@ __interrupt void uart_interrupt (void)
         validCommandFlag = true;
     }
 }
-
+#endif
 /* ===== public functions ===== */
 
 int main(void)
