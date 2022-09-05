@@ -183,6 +183,11 @@ int main(void)
 
     led_on(LED_GREEN);
 
+    /* test: fake an input string */
+    strcpy(parameterString, "hello\r");
+    parameterLength = strlen(parameterString);
+    validCommandFlag = true;
+
     while (1)
     {
         /* 'validCommandFlag' is true when the user enters an input command from console */
