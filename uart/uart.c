@@ -102,6 +102,8 @@ int putchar (int byte)
 }
 
 /* ----- read a string ----- */
+/* XXX this is only faking input */
+/* TODO get string from real UART */
 char* uart_gets (char* s, const unsigned int n)
 {
     static int state = 0;
