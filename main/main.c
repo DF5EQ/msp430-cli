@@ -62,7 +62,6 @@ static CLI_Command_t command_tbl[] =
 /* provided public variables */
 unsigned char parameterString[COMMAND_STRING_LEN];
 uint8_t       parameterLength;
-volatile bool validCommandFlag;
 
 /* consumed public variables */
 extern volatile uint16_t __m_flash_size;
@@ -147,22 +146,6 @@ static void CLI_Info(void)
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
 }
 
-/* ===== interrupt functions ===== */
-#if 0
-/* ----- uart receive interrupt ----- */
-#pragma vector = USCI_A0_VECTOR
-__interrupt void uart_interrupt (void)
-{
-    parameterString[parameterLength] = uart_getc();
-    putchar(parameterString[parameterLength]); /* Echo */
-
-    /* Also get the characters '\r\n' */
-    if (parameterString[parameterLength++] == '\r')
-    {
-        validCommandFlag = true;
-    }
-}
-#endif
 /* ===== public functions ===== */
 
 int main(void)
@@ -183,14 +166,9 @@ int main(void)
 
     led_on(LED_GREEN);
 
-    /* test: fake an input string */
-//    uart_gets(parameterString, 42);
-//    parameterLength = strlen(parameterString);
-//    validCommandFlag = true;
-
     while (1)
     {
-        /* 'validCommandFlag' is true when the user enters an input command from console */
+        /* uart_gets returns a non-NULL pointer when a string is available in uart module */
         while (uart_gets(parameterString, 42))
         {
             led_on(LED_RED);
@@ -226,12 +204,6 @@ int main(void)
             }
 
             printf("\r\nmsp430-cli > ");
-
-            /* reset receive buffer and flag */
-//            memset(parameterString, '\0', parameterLength + 1);
-//            memset(cmd, '\0', 32);
-//            parameterLength = 0;
-//            validCommandFlag = false;
 
             led_off(LED_RED);
             led_on(LED_GREEN);

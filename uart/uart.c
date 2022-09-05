@@ -88,13 +88,7 @@ void uart_init(void)
     memset(rx_buffer, '\0', RX_BUFFER_LENGTH);
     rx_buffer_index = 0;
 }
-#if 0
-/* ----- receive a single byte out through UART ----- */
-unsigned char uart_getc(void)
-{
-    return UCA0RXBUF;
-}
-#endif
+
 /* ----- send a byte ----- */
 int putchar (int byte)
 {
