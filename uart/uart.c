@@ -105,3 +105,10 @@ int putchar (int byte)
 
     return 0;
 }
+
+/* ----- read a string ----- */
+char* uart_gets (char* s, const unsigned int n)
+{
+    strcpy(s, "hello\r");
+    return s;
+}

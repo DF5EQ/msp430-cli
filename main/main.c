@@ -184,7 +184,7 @@ int main(void)
     led_on(LED_GREEN);
 
     /* test: fake an input string */
-    strcpy(parameterString, "hello\r");
+    uart_gets(parameterString, 42);
     parameterLength = strlen(parameterString);
     validCommandFlag = true;
 
