@@ -156,8 +156,6 @@ int main(void)
     system_init();
     led_init();
     uart_init();
-    memset(parameterString, '\0', COMMAND_STRING_LEN);
-    memset(cmd, '\0', 32);
 
     /* show banner */
     startup_cli();
