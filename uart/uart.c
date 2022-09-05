@@ -15,6 +15,7 @@
  */
 
 /* ===== includes ===== */
+#include <string.h>
 #include "uart.h"
 
 /* ===== private datatypes ===== */
@@ -109,6 +110,21 @@ int putchar (int byte)
 /* ----- read a string ----- */
 char* uart_gets (char* s, const unsigned int n)
 {
-    strcpy(s, "hello\r");
-    return s;
+    static int state = 0;
+    char* ret;
+
+    switch (state)
+    {
+        case 0:
+            strcpy(s, "hello\r");
+            ret = s;
+            state = 1;
+            break;
+        case 1:
+            ret = NULL;
+            break;
+        default:
+            break;
+    }
+    return ret;
 }

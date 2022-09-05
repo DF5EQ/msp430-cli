@@ -184,17 +184,19 @@ int main(void)
     led_on(LED_GREEN);
 
     /* test: fake an input string */
-    uart_gets(parameterString, 42);
-    parameterLength = strlen(parameterString);
-    validCommandFlag = true;
+//    uart_gets(parameterString, 42);
+//    parameterLength = strlen(parameterString);
+//    validCommandFlag = true;
 
     while (1)
     {
         /* 'validCommandFlag' is true when the user enters an input command from console */
-        while (validCommandFlag)
+        while (uart_gets(parameterString, 42))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
+
+            parameterLength = strlen(parameterString);
 
             CLI_GetCommand(cmd);
 
@@ -226,10 +228,10 @@ int main(void)
             printf("\r\nmsp430-cli > ");
 
             /* reset receive buffer and flag */
-            memset(parameterString, '\0', parameterLength + 1);
-            memset(cmd, '\0', 32);
-            parameterLength = 0;
-            validCommandFlag = false;
+//            memset(parameterString, '\0', parameterLength + 1);
+//            memset(cmd, '\0', 32);
+//            parameterLength = 0;
+//            validCommandFlag = false;
 
             led_off(LED_RED);
             led_on(LED_GREEN);
