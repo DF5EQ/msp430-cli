@@ -97,13 +97,14 @@ static void CLI_GetCommand(unsigned char* cmd)
     for (cmd_len = 0; cmd_len < parameterLength; cmd_len++)
     {
         if ((parameterString[cmd_len] == ' ')
-            || (parameterString[cmd_len] == '\0')
-            || (parameterString[cmd_len] == 0x0D))
+            || (parameterString[cmd_len] == '\n')
+            || (parameterString[cmd_len] == '\r'))
         {
-            strncpy((char*)cmd, (char*)parameterString, cmd_len);
+            parameterString[cmd_len] = '\0';
             break;
         }
     }
+    strcpy((char*)cmd, (char*)parameterString);
 }
 
 /* ----- command executing: help ----- */

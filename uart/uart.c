@@ -110,14 +110,18 @@ char* uart_gets (char* s, const unsigned int n)
     switch (state)
     {
         case 0:
-            strcpy(s, "hello\r");
+            strcpy(s, "hello");
             ret = s;
-            state = 1;
+            state++;
             break;
         case 1:
-            ret = NULL;
+            strcpy(s, "info");
+            ret = s;
+            state++;
             break;
         default:
+            s[0] = '\0';
+            ret = NULL;
             break;
     }
     return ret;
