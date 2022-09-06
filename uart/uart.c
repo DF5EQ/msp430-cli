@@ -38,14 +38,21 @@ static bool cr_received = false;
 /* ===== private functions ===== */
 static char uart_rx (char c)
 {
-    rx_buffer[rx_buffer_index] = c;
-
-    if (rx_buffer[rx_buffer_index] == '\r')
+    if(rx_buffer_index >= RX_BUFFER_LENGTH)
     {
-        rx_buffer[rx_buffer_index] = '\0';
-        cr_received = true;
+        return '\a';
     }
-    return rx_buffer[rx_buffer_index++];
+    else
+    {
+        rx_buffer[rx_buffer_index] = c;
+
+        if (rx_buffer[rx_buffer_index] == '\r')
+        {
+            rx_buffer[rx_buffer_index] = '\0';
+            cr_received = true;
+        }
+        return rx_buffer[rx_buffer_index++];
+    }
 }
 
 /* ===== interrupt functions ===== */
@@ -95,8 +102,7 @@ void uart_init(void)
     /* enable receive interrupt */
     UCA0IE |= UCRXIE;
 
-    /* clear rx buffer */
-    memset(rx_buffer, '\0', RX_BUFFER_LENGTH);
+    /* reset buffer index */
     rx_buffer_index = 0;
 }
 
