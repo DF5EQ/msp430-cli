@@ -16,6 +16,7 @@
 
 /* ===== includes ===== */
 #include <string.h>
+#include <stdbool.h>
 #include "uart.h"
 
 /* ===== private datatypes ===== */
@@ -30,6 +31,7 @@
 /* ===== private variables ===== */
 static char rx_buffer[RX_BUFFER_LENGTH];
 static char rx_buffer_index;
+static bool cr_received = false;
 
 /* ===== public variables ===== */
 
@@ -49,6 +51,14 @@ __interrupt void uart_interrupt (void)
 
             /* Echo */
             putchar(rx_buffer[rx_buffer_index]);
+
+            if (rx_buffer[rx_buffer_index] == '\r')
+            {
+                rx_buffer[rx_buffer_index] = '\0';
+                cr_received = true;
+            }
+
+            rx_buffer_index++;
 
             break;
         case 0x04:  // Vector 4: UCTXIFG
@@ -102,29 +112,15 @@ int putchar (int byte)
 }
 
 /* ----- read a string ----- */
-/* XXX this is only faking input */
-/* TODO get string from real UART */
 char* uart_gets (char* s, const unsigned int n)
 {
-    static int state = 0;
-    char* ret;
-
-    switch (state)
+    if(cr_received == true)
     {
-        case 0:
-            strcpy(s, "hello");
-            ret = s;
-            state++;
-            break;
-        case 1:
-            strcpy(s, "info");
-            ret = s;
-            state++;
-            break;
-        default:
-            s[0] = '\0';
-            ret = NULL;
-            break;
+        strcpy(s, rx_buffer);
+        rx_buffer_index = 0;
+        cr_received = false;
+        return s;
     }
-    return ret;
+
+    return NULL;
 }
