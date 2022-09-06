@@ -36,6 +36,17 @@ static bool cr_received = false;
 /* ===== public variables ===== */
 
 /* ===== private functions ===== */
+static char uart_rx (char c)
+{
+    rx_buffer[rx_buffer_index] = c;
+
+    if (rx_buffer[rx_buffer_index] == '\r')
+    {
+        rx_buffer[rx_buffer_index] = '\0';
+        cr_received = true;
+    }
+    return rx_buffer[rx_buffer_index++];
+}
 
 /* ===== interrupt functions ===== */
 #pragma vector = USCI_A0_VECTOR
@@ -47,19 +58,9 @@ __interrupt void uart_interrupt (void)
             break;
         case 0x02:  // Vector 2: UCRXIFG
             /* read byte from serial line */
-            rx_buffer[rx_buffer_index] = UCA0RXBUF;
-
-            /* Echo */
-            putchar(rx_buffer[rx_buffer_index]);
-
-            if (rx_buffer[rx_buffer_index] == '\r')
-            {
-                rx_buffer[rx_buffer_index] = '\0';
-                cr_received = true;
-            }
-
-            rx_buffer_index++;
-
+            /* store in buffer            */
+            /* send echo                  */
+            putchar(uart_rx(UCA0RXBUF));
             break;
         case 0x04:  // Vector 4: UCTXIFG
             break;
