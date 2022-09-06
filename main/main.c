@@ -62,7 +62,6 @@ static CLI_Command_t command_tbl[] =
 /* provided public variables */
 unsigned char parameterString[COMMAND_STRING_LEN];
 uint8_t       parameterLength;
-volatile bool validCommandFlag;
 
 /* consumed public variables */
 extern volatile uint16_t __m_flash_size;
@@ -98,13 +97,14 @@ static void CLI_GetCommand(unsigned char* cmd)
     for (cmd_len = 0; cmd_len < parameterLength; cmd_len++)
     {
         if ((parameterString[cmd_len] == ' ')
-            || (parameterString[cmd_len] == '\0')
-            || (parameterString[cmd_len] == 0x0D))
+            || (parameterString[cmd_len] == '\n')
+            || (parameterString[cmd_len] == '\r'))
         {
-            strncpy((char*)cmd, (char*)parameterString, cmd_len);
+            parameterString[cmd_len] = '\0';
             break;
         }
     }
+    strcpy((char*)cmd, (char*)parameterString);
 }
 
 /* ----- command executing: help ----- */
@@ -147,22 +147,6 @@ static void CLI_Info(void)
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
 }
 
-/* ===== interrupt functions ===== */
-
-/* ----- uart receive interrupt ----- */
-#pragma vector = USCI_A0_VECTOR
-__interrupt void uart_interrupt (void)
-{
-    parameterString[parameterLength] = uart_getc();
-    putchar(parameterString[parameterLength]); /* Echo */
-
-    /* Also get the characters '\r\n' */
-    if (parameterString[parameterLength++] == '\r')
-    {
-        validCommandFlag = true;
-    }
-}
-
 /* ===== public functions ===== */
 
 int main(void)
@@ -173,8 +157,6 @@ int main(void)
     system_init();
     led_init();
     uart_init();
-    memset(parameterString, '\0', COMMAND_STRING_LEN);
-    memset(cmd, '\0', 32);
 
     /* show banner */
     startup_cli();
@@ -185,11 +167,13 @@ int main(void)
 
     while (1)
     {
-        /* 'validCommandFlag' is true when the user enters an input command from console */
-        while (validCommandFlag)
+        /* uart_gets returns a non-NULL pointer when a string is available in uart module */
+        while (uart_gets(parameterString, 42))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
+
+            parameterLength = strlen(parameterString);
 
             CLI_GetCommand(cmd);
 
@@ -219,12 +203,6 @@ int main(void)
             }
 
             printf("\r\nmsp430-cli > ");
-
-            /* reset receive buffer and flag */
-            memset(parameterString, '\0', parameterLength + 1);
-            memset(cmd, '\0', 32);
-            parameterLength = 0;
-            validCommandFlag = false;
 
             led_off(LED_RED);
             led_on(LED_GREEN);

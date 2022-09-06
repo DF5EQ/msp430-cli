@@ -15,21 +15,62 @@
  */
 
 /* ===== includes ===== */
+#include <string.h>
+#include <stdbool.h>
 #include "uart.h"
 
 /* ===== private datatypes ===== */
 
 /* ===== private symbols ===== */
+#define RX_BUFFER_LENGTH 10
 
 /* ===== private constants ===== */
 
 /* ===== public constants ===== */
 
 /* ===== private variables ===== */
+static char rx_buffer[RX_BUFFER_LENGTH];
+static char rx_buffer_index;
+static bool cr_received = false;
 
 /* ===== public variables ===== */
 
 /* ===== private functions ===== */
+
+/* ===== interrupt functions ===== */
+#pragma vector = USCI_A0_VECTOR
+__interrupt void uart_interrupt (void)
+{
+    switch(UCA0IV)
+    {
+        case 0x00:  // Vector 0: No interrupts
+            break;
+        case 0x02:  // Vector 2: UCRXIFG
+            /* read byte from serial line */
+            rx_buffer[rx_buffer_index] = UCA0RXBUF;
+
+            /* Echo */
+            putchar(rx_buffer[rx_buffer_index]);
+
+            if (rx_buffer[rx_buffer_index] == '\r')
+            {
+                rx_buffer[rx_buffer_index] = '\0';
+                cr_received = true;
+            }
+
+            rx_buffer_index++;
+
+            break;
+        case 0x04:  // Vector 4: UCTXIFG
+            break;
+        case 0x06:  // Vector 6: UCSTTIFG
+            break;
+        case 0x08:  // Vector 8: UCTXCPTIFG
+            break;
+        default:
+            break;
+    }
+}
 
 /* ===== public functions ===== */
 
@@ -52,12 +93,10 @@ void uart_init(void)
 
     /* enable receive interrupt */
     UCA0IE |= UCRXIE;
-}
 
-/* ----- receive a single byte out through UART ----- */
-unsigned char uart_getc(void)
-{
-    return UCA0RXBUF;
+    /* clear rx buffer */
+    memset(rx_buffer, '\0', RX_BUFFER_LENGTH);
+    rx_buffer_index = 0;
 }
 
 /* ----- send a byte ----- */
@@ -70,4 +109,18 @@ int putchar (int byte)
     UCA0TXBUF = byte;
 
     return 0;
+}
+
+/* ----- read a string ----- */
+char* uart_gets (char* s, const unsigned int n)
+{
+    if(cr_received == true)
+    {
+        strcpy(s, rx_buffer);
+        rx_buffer_index = 0;
+        cr_received = false;
+        return s;
+    }
+
+    return NULL;
 }
