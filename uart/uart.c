@@ -24,6 +24,12 @@
 /* ===== private symbols ===== */
 #define RX_BUFFER_LENGTH 10
 
+#define NUL 0x00
+#define BEL 0x07
+#define BS  0x08
+#define LF  0x0a
+#define CR  0x0d
+
 /* ===== private constants ===== */
 
 /* ===== public constants ===== */
@@ -36,23 +42,33 @@ static bool cr_received = false;
 /* ===== public variables ===== */
 
 /* ===== private functions ===== */
-static char uart_rx (char c)
+static unsigned char uart_rx (unsigned char c)
 {
-    if(rx_buffer_index >= RX_BUFFER_LENGTH)
+    if(c == CR || c == LF)
     {
-        return '\a';
+        rx_buffer[rx_buffer_index] = NUL;
+        cr_received = true;
+        return NUL;
     }
-    else
-    {
-        rx_buffer[rx_buffer_index] = c;
 
-        if (rx_buffer[rx_buffer_index] == '\r')
+    if(c == BS)
+    {
+        if(rx_buffer_index == 0)
         {
-            rx_buffer[rx_buffer_index] = '\0';
-            cr_received = true;
+            return NUL;
         }
-        return rx_buffer[rx_buffer_index++];
+        rx_buffer_index--;
+        return BS;
     }
+
+    if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
+    {
+        return BEL;
+    }
+
+    rx_buffer[rx_buffer_index] = c;
+    rx_buffer_index++;
+    return c;
 }
 
 /* ===== interrupt functions ===== */
