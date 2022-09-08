@@ -20,6 +20,11 @@
 #include "uart.h"
 
 /* ===== private datatypes ===== */
+typedef enum {
+    RX_STATE_NORMAL,
+    RX_STATE_ESC,       /* 0x1b (escape) reveived */
+    RX_STATE_ESC_SBO,   /* 0x1b (escape) and 0x5b (square bracket open) reveived */
+} rx_state_t;
 
 /* ===== private symbols ===== */
 #define RX_BUFFER_LENGTH 10
@@ -29,6 +34,7 @@
 #define BS  0x08
 #define LF  0x0a
 #define CR  0x0d
+#define ESC 0x1b
 
 /* ===== private constants ===== */
 
@@ -44,31 +50,74 @@ static bool cr_received = false;
 /* ===== private functions ===== */
 static unsigned char uart_rx (unsigned char c)
 {
-    if(c == CR || c == LF)
-    {
-        rx_buffer[rx_buffer_index] = NUL;
-        cr_received = true;
-        return NUL;
-    }
+    static rx_state_t rx_state = RX_STATE_NORMAL;
 
-    if(c == BS)
+    switch(rx_state)
     {
-        if(rx_buffer_index == 0)
-        {
-            return NUL;
-        }
-        rx_buffer_index--;
-        return BS;
-    }
+        case RX_STATE_ESC:
+            if(c == '[')
+            {
+                rx_state = RX_STATE_ESC_SBO;
+            }
+            else
+            {
+                rx_state = RX_STATE_NORMAL;
+            }
+            return c;
 
-    if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
-    {
-        return BEL;
-    }
+        case RX_STATE_ESC_SBO:
+            rx_state = RX_STATE_NORMAL;
+            switch(c)
+            {
+                case 'A': /* up arrow */
+                case 'B': /* down arrow */
+                    return 0;
+                    break;
+                case 'C': /* right arrow */
+                    if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
+                    {
+                        return BEL;
+                    }
+                    rx_buffer_index++;
+                    break;
+                case 'D': /* left arrow */
+                    if(rx_buffer_index == 0)
+                    {
+                        return BEL;
+                    }
+                    rx_buffer_index--;
+                    break;
+            }
+            return c;
 
-    rx_buffer[rx_buffer_index] = c;
-    rx_buffer_index++;
-    return c;
+        case RX_STATE_NORMAL:
+            switch(c)
+            {
+                case ESC:
+                    rx_state = RX_STATE_ESC;
+                    return c;
+                case CR:
+                case LF:
+                    rx_buffer[rx_buffer_index] = 0;
+                    cr_received = true;
+                    return 0;
+                case BS:
+                    /* cursor was moved left */
+                    if(rx_buffer_index == 0)
+                    {
+                        return BEL;
+                    }
+                    rx_buffer_index--;
+                    return c;
+            }
+            if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
+            {
+                return BEL;
+            }
+            rx_buffer[rx_buffer_index] = c;
+            rx_buffer_index++;
+            return c;
+    }
 }
 
 /* ===== interrupt functions ===== */
