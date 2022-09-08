@@ -69,10 +69,6 @@ static unsigned char uart_rx (unsigned char c)
             rx_state = RX_STATE_NORMAL;
             switch(c)
             {
-                case 'A': /* up arrow */
-                case 'B': /* down arrow */
-                    return 0;
-                    break;
                 case 'C': /* right arrow */
                     if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
                     {
@@ -87,6 +83,8 @@ static unsigned char uart_rx (unsigned char c)
                     }
                     rx_buffer_index--;
                     break;
+                default:
+                    return 's'; /* 'save cursor position' as dummy to do nothing */
             }
             return c;
 
