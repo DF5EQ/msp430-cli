@@ -63,8 +63,17 @@ static unsigned char uart_rx (unsigned char c)
         case RX_RUNNING:
             switch(c)
             {
-                case BS: /* TODO delete to left */
-                    putchar(BS);
+                case BS: /* delete to left */
+                    /* update terminal */
+                    uart_puts(CURSOR_LEFT);
+                    uart_puts(CURSOR_SAVE);
+                    uart_puts(DELETE_TO_LINEEND);
+                    uart_puts(&rx_buffer[rx_buffer_index]);
+                    uart_puts(CURSOR_RESTORE);
+
+                    /* update buffer */
+                    rx_buffer_index--;
+                    strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
                     break;
                 case ESC: /* change state */
                     rx_state = RX_ESC;
@@ -141,7 +150,7 @@ static unsigned char uart_rx (unsigned char c)
                     uart_puts(CURSOR_RESTORE);
 
                     /* update buffer */
-                    rx_buffer[strlen(rx_buffer)-1] = 0;
+                    strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
 
                     /* next state */
                     rx_state = RX_ESC_SBO_TILDE;
