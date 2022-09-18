@@ -64,16 +64,23 @@ static unsigned char uart_rx (unsigned char c)
             switch(c)
             {
                 case BS: /* delete to left */
-                    /* update terminal */
-                    uart_puts(CURSOR_LEFT);
-                    uart_puts(CURSOR_SAVE);
-                    uart_puts(DELETE_TO_LINEEND);
-                    uart_puts(&rx_buffer[rx_buffer_index]);
-                    uart_puts(CURSOR_RESTORE);
+                    if(rx_buffer_index == 0)
+                    {
+                        putchar(BEL);
+                    }
+                    else
+                    {
+                        /* update terminal */
+                        uart_puts(CURSOR_LEFT);
+                        uart_puts(CURSOR_SAVE);
+                        uart_puts(DELETE_TO_LINEEND);
+                        uart_puts(&rx_buffer[rx_buffer_index]);
+                        uart_puts(CURSOR_RESTORE);
 
-                    /* update buffer */
-                    rx_buffer_index--;
-                    strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
+                        /* update buffer */
+                        rx_buffer_index--;
+                        strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
+                    }
                     break;
                 case ESC: /* change state */
                     rx_state = RX_ESC;
@@ -143,17 +150,24 @@ static unsigned char uart_rx (unsigned char c)
                     rx_state = RX_RUNNING;
                     break;
                 case '3': /* delete */
-                    /* update terminal */
-                    uart_puts(CURSOR_SAVE);
-                    uart_puts(DELETE_TO_LINEEND);
-                    uart_puts(&rx_buffer[rx_buffer_index+1]);
-                    uart_puts(CURSOR_RESTORE);
+                    if(rx_buffer[rx_buffer_index] == 0)
+                    {
+                        putchar(BEL);
+                    }
+                    else
+                    {
+                        /* update terminal */
+                        uart_puts(CURSOR_SAVE);
+                        uart_puts(DELETE_TO_LINEEND);
+                        uart_puts(&rx_buffer[rx_buffer_index+1]);
+                        uart_puts(CURSOR_RESTORE);
 
-                    /* update buffer */
-                    strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
+                        /* update buffer */
+                        strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
 
-                    /* next state */
-                    rx_state = RX_ESC_SBO_TILDE;
+                        /* next state */
+                        rx_state = RX_ESC_SBO_TILDE;
+                    }
                     break;
                 case '2': /* insert */
                 case '5': /* page up */
