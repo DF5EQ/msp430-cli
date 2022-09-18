@@ -21,9 +21,11 @@
 
 /* ===== private datatypes ===== */
 typedef enum {
-    RX_STATE_NORMAL,
-    RX_STATE_ESC,       /* 0x1b (escape) reveived */
-    RX_STATE_ESC_SBO,   /* 0x1b (escape) and 0x5b (square bracket open) reveived */
+    RX_RUNNING,
+    RX_ESC,         /* 0x1b (escape) reveived */
+    RX_ESC_SBO,     /* 0x1b (escape) and 0x5b (square bracket open) reveived */
+    RX_ESC_SBO_TILDE,
+    RX_FULL
 } rx_state_t;
 
 /* ===== private symbols ===== */
@@ -43,78 +45,108 @@ typedef enum {
 /* ===== private variables ===== */
 static char rx_buffer[RX_BUFFER_LENGTH];
 static char rx_buffer_index;
-static bool cr_received = false;
+static rx_state_t rx_state;
+//static char cli_buffer[100];
 
 /* ===== public variables ===== */
 
 /* ===== private functions ===== */
 static unsigned char uart_rx (unsigned char c)
 {
-    static rx_state_t rx_state = RX_STATE_NORMAL;
-
     switch(rx_state)
     {
-        case RX_STATE_ESC:
-            if(c == '[')
-            {
-                rx_state = RX_STATE_ESC_SBO;
-            }
-            else
-            {
-                rx_state = RX_STATE_NORMAL;
-            }
-            return c;
-
-        case RX_STATE_ESC_SBO:
-            rx_state = RX_STATE_NORMAL;
+        case RX_RUNNING:
             switch(c)
             {
-                case 'C': /* right arrow */
-                    if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
-                    {
-                        return BEL;
-                    }
-                    rx_buffer_index++;
+                case BS: /* TODO delete to left */
+                    putchar(BS);
                     break;
-                case 'D': /* left arrow */
-                    if(rx_buffer_index == 0)
-                    {
-                        return BEL;
-                    }
-                    rx_buffer_index--;
+                case ESC: /* change state */
+                    rx_state = RX_ESC;
                     break;
-                default:
-                    return 's'; /* 'save cursor position' as dummy to do nothing */
-            }
-            return c;
-
-        case RX_STATE_NORMAL:
-            switch(c)
-            {
-                case ESC:
-                    rx_state = RX_STATE_ESC;
-                    return c;
                 case CR:
                 case LF:
                     rx_buffer[rx_buffer_index] = 0;
-                    cr_received = true;
-                    return 0;
-                case BS:
-                    /* cursor was moved left */
+                    rx_state = RX_FULL;
+                    break;
+                default:
+                        if( c >= 0x20 && c <= 0x7f )
+                        {
+                            if( rx_buffer_index == RX_BUFFER_LENGTH-1 )
+                            {
+                                putchar(BEL);
+                            }
+                            else
+                            {
+                                /* store character */
+                                rx_buffer[rx_buffer_index] = c;
+                                rx_buffer_index++;
+
+                                /* echo character */
+                                putchar(c);
+                            }
+                        }
+                    break;
+            }
+            break;
+
+        case RX_ESC:
+            switch(c)
+            {
+                case '[':
+                    rx_state = RX_ESC_SBO;
+                    break;
+                default:
+                    rx_state = RX_RUNNING;
+                    break;
+            }
+            break;
+
+        case RX_ESC_SBO:
+            switch(c)
+            {
+                case 'C': /* cursor right */
+                    if(rx_buffer_index == RX_BUFFER_LENGTH-1)
+                    {
+                        putchar(BEL);
+                    }
+                    else
+                    {
+                        rx_buffer_index++;
+                    }
+                    rx_state = RX_RUNNING;
+                    break;
+                case 'D': /* cursor left */
                     if(rx_buffer_index == 0)
                     {
-                        return BEL;
+                        putchar(BEL);
                     }
-                    rx_buffer_index--;
-                    return c;
+                    else
+                    {
+                        rx_buffer_index--;
+                    }
+                    rx_state = RX_RUNNING;
+                    break;
+                case '2':
+                case '3':
+                case '5':
+                case '6':
+                    rx_state = RX_ESC_SBO_TILDE;
+                    break;
+                default:
+                    rx_state = RX_RUNNING;
+                    break;
             }
-            if(rx_buffer_index >= RX_BUFFER_LENGTH-1)
-            {
-                return BEL;
-            }
-            rx_buffer[rx_buffer_index] = c;
-            rx_buffer_index++;
-            return c;
+            break;
+
+        case RX_ESC_SBO_TILDE:
+            rx_state = RX_RUNNING;
+            break;
+
+        case RX_FULL:
+            /* nothing to do here */
+            /* will be left after read out of buffer */
+            break;
     }
 }
 
@@ -130,7 +162,7 @@ __interrupt void uart_interrupt (void)
             /* read byte from serial line */
             /* store in buffer            */
             /* send echo                  */
-            putchar(uart_rx(UCA0RXBUF));
+            uart_rx(UCA0RXBUF);
             break;
         case 0x04:  // Vector 4: UCTXIFG
             break;
@@ -167,6 +199,9 @@ void uart_init(void)
 
     /* reset buffer index */
     rx_buffer_index = 0;
+
+    /* reset rx state machine */
+    rx_state = RX_RUNNING;
 }
 
 /* ----- send a byte ----- */
@@ -184,13 +219,14 @@ int putchar (int byte)
 /* ----- read a string ----- */
 char* uart_gets (char* s, const unsigned int n)
 {
-    if(cr_received == true)
+    if(rx_state == RX_FULL)
     {
         strcpy(s, rx_buffer);
         rx_buffer_index = 0;
-        cr_received = false;
+        rx_state = RX_RUNNING;
         return s;
     }
 
     return NULL;
 }
+
