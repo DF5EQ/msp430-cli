@@ -29,7 +29,7 @@ typedef enum {
 } rx_state_t;
 
 /* ===== private symbols ===== */
-#define RX_BUFFER_LENGTH 10
+#define RX_BUFFER_SIZE 10
 
 #define NUL 0x00
 #define BEL 0x07
@@ -43,7 +43,7 @@ typedef enum {
 /* ===== public constants ===== */
 
 /* ===== private variables ===== */
-static char rx_buffer[RX_BUFFER_LENGTH];
+static char rx_buffer[RX_BUFFER_SIZE];
 static char rx_buffer_index;
 static rx_state_t rx_state;
 //static char cli_buffer[100];
@@ -66,13 +66,12 @@ static unsigned char uart_rx (unsigned char c)
                     break;
                 case CR:
                 case LF:
-                    rx_buffer[rx_buffer_index] = 0;
                     rx_state = RX_FULL;
                     break;
                 default:
                         if( c >= 0x20 && c <= 0x7f )
                         {
-                            if( rx_buffer_index == RX_BUFFER_LENGTH-1 )
+                            if( rx_buffer_index == RX_BUFFER_SIZE-1 )
                             {
                                 putchar(BEL);
                             }
@@ -106,12 +105,15 @@ static unsigned char uart_rx (unsigned char c)
             switch(c)
             {
                 case 'C': /* cursor right */
-                    if(rx_buffer_index == RX_BUFFER_LENGTH-1)
+                    if(rx_buffer_index == RX_BUFFER_SIZE-1)
                     {
                         putchar(BEL);
                     }
                     else
                     {
+                        putchar(ESC);
+                        putchar('[');
+                        putchar('C');
                         rx_buffer_index++;
                     }
                     rx_state = RX_RUNNING;
@@ -123,6 +125,9 @@ static unsigned char uart_rx (unsigned char c)
                     }
                     else
                     {
+                        putchar(ESC);
+                        putchar('[');
+                        putchar('D');
                         rx_buffer_index--;
                     }
                     rx_state = RX_RUNNING;
@@ -197,6 +202,9 @@ void uart_init(void)
     /* enable receive interrupt */
     UCA0IE |= UCRXIE;
 
+    /* clear rx buffer */
+    memset(rx_buffer, 0, RX_BUFFER_SIZE);
+
     /* reset buffer index */
     rx_buffer_index = 0;
 
@@ -222,6 +230,7 @@ char* uart_gets (char* s, const unsigned int n)
     if(rx_state == RX_FULL)
     {
         strcpy(s, rx_buffer);
+        memset(rx_buffer, 0, RX_BUFFER_SIZE);
         rx_buffer_index = 0;
         rx_state = RX_RUNNING;
         return s;
