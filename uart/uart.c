@@ -38,6 +38,12 @@ typedef enum {
 #define CR  0x0d
 #define ESC 0x1b
 
+#define CURSOR_RIGHT      "\x1b[C"
+#define CURSOR_LEFT       "\x1b[D"
+#define CURSOR_SAVE       "\x1b[s"
+#define CURSOR_RESTORE    "\x1b[u"
+#define DELETE_TO_LINEEND "\x1b[0K"
+
 /* ===== private constants ===== */
 
 /* ===== public constants ===== */
@@ -46,7 +52,6 @@ typedef enum {
 static char rx_buffer[RX_BUFFER_SIZE];
 static char rx_buffer_index;
 static rx_state_t rx_state;
-//static char cli_buffer[100];
 
 /* ===== public variables ===== */
 
@@ -105,15 +110,13 @@ static unsigned char uart_rx (unsigned char c)
             switch(c)
             {
                 case 'C': /* cursor right */
-                    if(rx_buffer_index == RX_BUFFER_SIZE-1)
+                    if(rx_buffer[rx_buffer_index] == 0)
                     {
                         putchar(BEL);
                     }
                     else
                     {
-                        putchar(ESC);
-                        putchar('[');
-                        putchar('C');
+                        uart_puts(CURSOR_RIGHT);
                         rx_buffer_index++;
                     }
                     rx_state = RX_RUNNING;
@@ -125,17 +128,27 @@ static unsigned char uart_rx (unsigned char c)
                     }
                     else
                     {
-                        putchar(ESC);
-                        putchar('[');
-                        putchar('D');
+                        uart_puts(CURSOR_LEFT);
                         rx_buffer_index--;
                     }
                     rx_state = RX_RUNNING;
                     break;
-                case '2':
-                case '3':
-                case '5':
-                case '6':
+                case '3': /* delete */
+                    /* update terminal */
+                    uart_puts(CURSOR_SAVE);
+                    uart_puts(DELETE_TO_LINEEND);
+                    uart_puts(&rx_buffer[rx_buffer_index+1]);
+                    uart_puts(CURSOR_RESTORE);
+
+                    /* update buffer */
+                    rx_buffer[strlen(rx_buffer)-1] = 0;
+
+                    /* next state */
+                    rx_state = RX_ESC_SBO_TILDE;
+                    break;
+                case '2': /* insert */
+                case '5': /* page up */
+                case '6': /* page down */
                     rx_state = RX_ESC_SBO_TILDE;
                     break;
                 default:
@@ -222,6 +235,16 @@ int putchar (int byte)
     UCA0TXBUF = byte;
 
     return 0;
+}
+
+/* ----- send a string ----- */
+int uart_puts (char* s)
+{
+    while(*s != 0)
+    {
+        putchar(*s);
+        s++;
+    }
 }
 
 /* ----- read a string ----- */
