@@ -56,7 +56,7 @@ static rx_state_t rx_state;
 /* ===== public variables ===== */
 
 /* ===== private functions ===== */
-static unsigned char uart_rx (unsigned char c)
+static void uart_rx (unsigned char c)
 {
     switch(rx_state)
     {
@@ -186,7 +186,7 @@ static unsigned char uart_rx (unsigned char c)
 
         case RX_FULL:
             /* nothing to do here */
-            /* will be left after read out of buffer */
+            /* exit after external read of buffer */
             break;
     }
 }
