@@ -271,7 +271,7 @@ int uart_puts (char* s)
 }
 
 /* ----- read a string ----- */
-char* uart_gets (char* s, const unsigned int n)
+char* uart_gets (char* s)
 {
     if(rx_state == RX_FULL)
     {
