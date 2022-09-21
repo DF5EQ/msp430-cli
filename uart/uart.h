@@ -29,8 +29,9 @@
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void uart_init(void);
-int putchar (int byte);
-char* uart_gets (char* s, const unsigned int n);
+void  uart_init(void);
+int   putchar (int byte);
+int   uart_puts (char* s);
+char* uart_gets (char* s);
 
 #endif /* UART_H_ */

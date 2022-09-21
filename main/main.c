@@ -168,7 +168,7 @@ int main(void)
     while (1)
     {
         /* uart_gets returns a non-NULL pointer when a string is available in uart module */
-        while (uart_gets(parameterString, 42))
+        while (uart_gets(parameterString))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
