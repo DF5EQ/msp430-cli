@@ -176,15 +176,13 @@ int main(void)
 
             switch (cmd_idx = command_get_index(cmd))
             {
-                case -2:
+                case COMMAND_INVALID:
                     printf("\r\nInvalid command!\r\n");
                     break;
-                case -1:
+                case COMMAND_MISSING:
                     printf("\r\nMissing command!\r\n");
                     break;
-                case 0:
-                case 1:
-                case 2:
+                default:
                     command_get_function(cmd_idx)();
                     break;
             }

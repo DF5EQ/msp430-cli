@@ -34,7 +34,7 @@ int command_get_index (char* cmd)
 
     if (cmd[0] == 0)
     {
-        return -1;
+        return COMMAND_MISSING;
     }
 
     for (cmd_idx = 0; cmd_idx < command_number; cmd_idx++)
@@ -45,7 +45,7 @@ int command_get_index (char* cmd)
         }
     }
 
-    return -2;
+    return COMMAND_INVALID;
 }
 
 const char* command_get_command (int cmd_idx)

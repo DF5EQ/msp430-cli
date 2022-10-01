@@ -16,13 +16,15 @@ typedef struct
 } CLI_Command_t;
 
 /* ===== public symbols ===== */
+#define COMMAND_INVALID -2
+#define COMMAND_MISSING -1
 
 /* ===== public constants ===== */
 
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void                          command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num);
+void                         command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num);
 int                          command_get_index (char* cmd);
 const char*                  command_get_command (int cmd_idx);
 const char*                  command_get_description (int cmd_idx);
