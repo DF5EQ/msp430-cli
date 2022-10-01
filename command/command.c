@@ -66,12 +66,21 @@ const char* command_get_description (int cmd_idx)
     return command_table[cmd_idx].Command_Desc;
 }
 
+const CLI_Command_Function_t command_get_function (int cmd_idx)
+{
+    if (cmd_idx < 0 || cmd_idx >= command_number)
+    {
+        return NULL;
+    }
+    return command_table[cmd_idx].Command_Func;
+}
+
 void command_debug (void)
 {
     int cmd_idx;
 
     for (cmd_idx=-3; cmd_idx<=5; cmd_idx++)
     {
-        printf("%2d %-10s %-20s\r\n", cmd_idx, command_get_command(cmd_idx), command_get_description(cmd_idx));
+        printf("%2d %-10s %06p\r\n", cmd_idx, command_get_command(cmd_idx), command_get_function(cmd_idx));
     }
 }
