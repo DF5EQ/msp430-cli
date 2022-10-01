@@ -28,9 +28,9 @@
 /* ===== private datatypes ===== */
 
 /* ===== private symbols ===== */
-#define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
-#define CLEAR_SCREEN "\r\e[2J"
-#define PROMPT "msp430-cli >"
+#define COMMAND_NUM     (sizeof(command_tbl)/sizeof(command_tbl[0]))
+#define CLEAR_SCREEN    "\r\e[2J"
+#define PROMPT          "msp430-cli >"
 
 /* ===== private constants ===== */
 
@@ -86,7 +86,7 @@ static void CLI_Help(void)
     /* Print all commands and description for usage */
     printf( "\r\nPlease input command as follows:");
 
-    for (i = 0; i < COMMAND_LEN(command_tbl); i++)
+    for (i = 0; i < COMMAND_NUM; i++)
     {
         printf("\r\n\t%s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
     }
@@ -132,7 +132,7 @@ int main(void)
     system_init();
     led_init();
     uart_init();
-    command_init(command_tbl, sizeof(command_tbl)/sizeof(command_tbl[0]));
+    command_init(command_tbl, COMMAND_NUM);
 
     /* show banner */
     startup_cli();
