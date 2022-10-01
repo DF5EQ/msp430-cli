@@ -29,5 +29,6 @@ int                          command_get_index (char* cmd);
 const char*                  command_get_command (int cmd_idx);
 const char*                  command_get_description (int cmd_idx);
 const CLI_Command_Function_t command_get_function (int cmd_idx);
+char*                        command_parse (char* cmd);
 #endif
 

@@ -75,3 +75,19 @@ const CLI_Command_Function_t command_get_function (int cmd_idx)
     return command_table[cmd_idx].Command_Func;
 }
 
+char* command_parse (char* cmd)
+{
+    int i;
+
+    for (i=0; cmd[i] != 0; i++)
+    {
+        if (   (cmd[i] == ' ' )
+            || (cmd[i] == '\n')
+            || (cmd[i] == '\r') )
+        {
+            cmd[i] = 0;
+        }
+    }
+    return cmd;
+}
+

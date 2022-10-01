@@ -83,24 +83,6 @@ static void startup_cli(void)
     printf("\r\n\r\n%s ", PROMPT);
 }
 
-/* ----- get a command from the input string ----- */
-static void CLI_GetCommand(unsigned char* cmd)
-{
-    uint8_t cmd_len;
-
-    for (cmd_len = 0; cmd_len < parameterLength; cmd_len++)
-    {
-        if ((parameterString[cmd_len] == ' ')
-            || (parameterString[cmd_len] == '\n')
-            || (parameterString[cmd_len] == '\r'))
-        {
-            parameterString[cmd_len] = '\0';
-            break;
-        }
-    }
-    strcpy((char*)cmd, (char*)parameterString);
-}
-
 /* ----- command executing: help ----- */
 static void CLI_Help(void)
 {
@@ -165,14 +147,12 @@ int main(void)
     while (1)
     {
         /* uart_gets returns a non-NULL pointer when a string is available in uart module */
-        while (uart_gets(parameterString))
+        while (uart_gets(cmd))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
 
-            parameterLength = strlen(parameterString);
-
-            CLI_GetCommand(cmd);
+            command_parse(cmd);
 
             switch (cmd_idx = command_get_index(cmd))
             {
