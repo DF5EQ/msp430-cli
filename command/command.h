@@ -22,8 +22,9 @@ typedef struct
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num);
-int  command_get_index (char* cmd);
-void command_debug (void);
+void  command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num);
+int   command_get_index (char* cmd);
+char* command_get_command (int cmd_idx);
+void  command_debug (void);
 #endif
 
