@@ -48,7 +48,7 @@ int command_get_index (char* cmd)
     return -2;
 }
 
-char* command_get_command (int cmd_idx)
+const char* command_get_command (int cmd_idx)
 {
     if (cmd_idx < 0 || cmd_idx >= command_number)
     {
@@ -57,12 +57,21 @@ char* command_get_command (int cmd_idx)
     return command_table[cmd_idx].Command;
 }
 
+const char* command_get_description (int cmd_idx)
+{
+    if (cmd_idx < 0 || cmd_idx >= command_number)
+    {
+        return NULL;
+    }
+    return command_table[cmd_idx].Command_Desc;
+}
+
 void command_debug (void)
 {
     int cmd_idx;
 
     for (cmd_idx=-3; cmd_idx<=5; cmd_idx++)
     {
-        printf("%2d %s\r\n", cmd_idx, command_get_command(cmd_idx));
+        printf("%2d %-10s %-20s\r\n", cmd_idx, command_get_command(cmd_idx), command_get_description(cmd_idx));
     }
 }
