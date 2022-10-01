@@ -29,7 +29,6 @@
 
 /* ===== private symbols ===== */
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
-#define COMMAND_STRING_LEN 128
 #define CLEAR_SCREEN "\r\e[2J"
 #define PROMPT "msp430-cli >"
 
@@ -54,9 +53,6 @@ extern volatile uint16_t __m_flash_size;
 extern volatile uint16_t __m_ram_size;
 
 /* ===== private variables ===== */
-
-static unsigned char parameterString[COMMAND_STRING_LEN];
-static uint8_t       parameterLength;
 
 /* ===== public variables ===== */
 
@@ -132,6 +128,7 @@ int main(void)
     unsigned char cmd[32];
     int cmd_idx;
 
+    /* initilise all modules */
     system_init();
     led_init();
     uart_init();
@@ -139,6 +136,7 @@ int main(void)
 
     /* show banner */
     startup_cli();
+
     /* enable interrupt */
     __bis_SR_register(GIE);
 
@@ -147,7 +145,7 @@ int main(void)
     while (1)
     {
         /* uart_gets returns a non-NULL pointer when a string is available in uart module */
-        while (uart_gets(cmd))
+        if (uart_gets(cmd))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
