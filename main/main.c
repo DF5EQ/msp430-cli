@@ -30,6 +30,7 @@
 /* ===== private symbols ===== */
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
 #define COMMAND_STRING_LEN 128
+#define CLEAR_SCREEN "\r\e[2J"
 
 /* ===== private constants ===== */
 
@@ -149,6 +150,8 @@ int main(void)
     led_init();
     uart_init();
     command_init(command_tbl, sizeof(command_tbl)/sizeof(command_tbl[0]));
+
+    puts(CLEAR_SCREEN);
 
     command_debug();
 

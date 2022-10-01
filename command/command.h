@@ -23,6 +23,7 @@ typedef struct
 
 /* ===== public functions ===== */
 void command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num);
+int  command_get_index (char* cmd);
 void command_debug (void);
 #endif
 

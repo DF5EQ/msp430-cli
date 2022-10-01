@@ -8,7 +8,6 @@
 /* ===== private datatypes ===== */
 
 /* ===== private symbols ===== */
-#define CLEAR_SCREEN "\r\e[2J"
 
 /* ===== private constants ===== */
 
@@ -29,13 +28,33 @@ void command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num)
     command_number = cmd_num;
 }
 
+int command_get_index (char* cmd)
+{
+    int cmd_idx;
+
+    if (cmd[0] == 0)
+    {
+        return -1;
+    }
+
+    for (cmd_idx = 0; cmd_idx < command_number; cmd_idx++)
+    {
+        if (strcmp(cmd, command_table[cmd_idx].Command) == 0)
+        {
+            return cmd_idx;
+        }
+    }
+
+    return -2;
+}
+
 void command_debug (void)
 {
-    int i;
+    int cmd_idx;
 
-    puts(CLEAR_SCREEN);
-    for(i=0; i<command_number; i++)
-    {
-        printf("%2d: %-8s %-32s\r\n", i, command_table[i].Command, command_table[i].Command_Desc);
-    } 
+    cmd_idx = command_get_index("");      printf("%2d\r\n", cmd_idx);
+    cmd_idx = command_get_index("help");  printf("%2d\r\n", cmd_idx);
+    cmd_idx = command_get_index("info");  printf("%2d\r\n", cmd_idx);
+    cmd_idx = command_get_index("hello"); printf("%2d\r\n", cmd_idx);
+    cmd_idx = command_get_index("xxx");   printf("%2d\r\n", cmd_idx);
 }
