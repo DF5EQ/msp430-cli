@@ -31,6 +31,7 @@
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
 #define COMMAND_STRING_LEN 128
 #define CLEAR_SCREEN "\r\e[2J"
+#define PROMPT "msp430-cli >"
 
 /* ===== private constants ===== */
 
@@ -64,6 +65,7 @@ static uint8_t       parameterLength;
 /* ----- start CLI ----- */
 static void startup_cli(void)
 {
+    puts(CLEAR_SCREEN);
     printf("\r\n");
     printf("*----------------------------------------*\r\n");
     printf("*         MSP-EXP430FR5969 LaunchPad     *\r\n");
@@ -78,7 +80,7 @@ static void startup_cli(void)
     printf("\tMain clock (MCLK):       16MHz\r\n");
     printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
-    printf("\r\n\r\nmsp430-cli > ");
+    printf("\r\n\r\n%s ", PROMPT);
 }
 
 /* ----- get a command from the input string ----- */
@@ -119,6 +121,7 @@ static void CLI_Hello(void)
     /* Say "Hello, World!"" */
     printf("\r\nHello, World!");
     printf("\r\nI'm Peter. You'll find me on Earth.");
+    printf("\r\n");
 }
 
 /* ----- command executing: info ----- */
@@ -137,6 +140,7 @@ static void CLI_Info(void)
     printf("\r\n\tAES:             yes");
     printf("\r\n\tBSL:             UART");
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
+    printf("\r\n");
 }
 
 /* ===== public functions ===== */
@@ -144,16 +148,12 @@ static void CLI_Info(void)
 int main(void)
 {
     unsigned char cmd[32];
-    uint8_t cmd_idx;
+    int cmd_idx;
 
     system_init();
     led_init();
     uart_init();
     command_init(command_tbl, sizeof(command_tbl)/sizeof(command_tbl[0]));
-
-    puts(CLEAR_SCREEN);
-
-    command_debug();
 
     /* show banner */
     startup_cli();
@@ -174,32 +174,22 @@ int main(void)
 
             CLI_GetCommand(cmd);
 
-            if (cmd[0] == '\0')
+            switch (cmd_idx = command_get_index(cmd))
             {
-                printf("\r\nMissing command!");
-            }
-            else
-            {
-                for (cmd_idx = 0; cmd_idx < COMMAND_LEN(command_tbl); cmd_idx++)
-                {
-                    if (!strcmp((char*)cmd, (char*)command_tbl[cmd_idx].Command))
-                    {
-                        break;
-                    }
-                }
-
-                if (cmd_idx < COMMAND_LEN(command_tbl))
-                {
-                    /* execute command */
-                    command_tbl[cmd_idx].Command_Func();
-                }
-                else
-                {
-                    printf("\r\nInvalid command!");
-                }
+                case -2:
+                    printf("\r\nInvalid command!\r\n");
+                    break;
+                case -1:
+                    printf("\r\nMissing command!\r\n");
+                    break;
+                case 0:
+                case 1:
+                case 2:
+                    command_get_function(cmd_idx)();
+                    break;
             }
 
-            printf("\r\nmsp430-cli > ");
+            printf("\r\n%s ", PROMPT);
 
             led_off(LED_RED);
             led_on(LED_GREEN);

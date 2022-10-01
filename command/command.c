@@ -75,12 +75,3 @@ const CLI_Command_Function_t command_get_function (int cmd_idx)
     return command_table[cmd_idx].Command_Func;
 }
 
-void command_debug (void)
-{
-    int cmd_idx;
-
-    for (cmd_idx=-3; cmd_idx<=5; cmd_idx++)
-    {
-        printf("%2d %-10s %06p\r\n", cmd_idx, command_get_command(cmd_idx), command_get_function(cmd_idx));
-    }
-}
