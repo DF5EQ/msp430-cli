@@ -23,16 +23,9 @@
 #include "system.h"
 #include "led.h"
 #include "uart.h"
+#include "command.h"
 
 /* ===== private datatypes ===== */
-typedef void (*CLI_Command_Function_t)(void);
-
-typedef struct
-{
-    char Command[32];
-    char Command_Desc[64];
-    CLI_Command_Function_t Command_Func;
-} CLI_Command_t;
 
 /* ===== private symbols ===== */
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
@@ -40,16 +33,12 @@ typedef struct
 
 /* ===== private constants ===== */
 
-/* ===== public constants ===== */
-
-/* ===== private variables ===== */
-
 /* needed forward declarations */
 static void CLI_Help(void);
 static void CLI_Info(void);
 static void CLI_Hello(void);
 
-static CLI_Command_t command_tbl[] =
+static const CLI_Command_t command_tbl[] =
 {
     /* Command, Description,                 Command_Func */
     { "help"  , "Show a list of commands",   CLI_Help  },
@@ -57,15 +46,17 @@ static CLI_Command_t command_tbl[] =
     { "hello" , "Say \"Hello, World\"",      CLI_Hello }
 };
 
-/* ===== public variables ===== */
+/* ===== public constants ===== */
 
-/* provided public variables */
-unsigned char parameterString[COMMAND_STRING_LEN];
-uint8_t       parameterLength;
-
-/* consumed public variables */
 extern volatile uint16_t __m_flash_size;
 extern volatile uint16_t __m_ram_size;
+
+/* ===== private variables ===== */
+
+static unsigned char parameterString[COMMAND_STRING_LEN];
+static uint8_t       parameterLength;
+
+/* ===== public variables ===== */
 
 /* ===== private functions ===== */
 
@@ -157,6 +148,9 @@ int main(void)
     system_init();
     led_init();
     uart_init();
+    command_init(command_tbl, sizeof(command_tbl)/sizeof(command_tbl[0]));
+
+    command_debug();
 
     /* show banner */
     startup_cli();
