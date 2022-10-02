@@ -23,33 +23,23 @@
 #include "system.h"
 #include "led.h"
 #include "uart.h"
+#include "command.h"
 
 /* ===== private datatypes ===== */
-typedef void (*CLI_Command_Function_t)(void);
-
-typedef struct
-{
-    char Command[32];
-    char Command_Desc[64];
-    CLI_Command_Function_t Command_Func;
-} CLI_Command_t;
 
 /* ===== private symbols ===== */
-#define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
-#define COMMAND_STRING_LEN 128
+#define COMMAND_NUM     (sizeof(command_tbl)/sizeof(command_tbl[0]))
+#define CLEAR_SCREEN    "\r\e[2J"
+#define PROMPT          "msp430-cli >"
 
 /* ===== private constants ===== */
-
-/* ===== public constants ===== */
-
-/* ===== private variables ===== */
 
 /* needed forward declarations */
 static void CLI_Help(void);
 static void CLI_Info(void);
 static void CLI_Hello(void);
 
-static CLI_Command_t command_tbl[] =
+static const CLI_Command_t command_tbl[] =
 {
     /* Command, Description,                 Command_Func */
     { "help"  , "Show a list of commands",   CLI_Help  },
@@ -57,21 +47,21 @@ static CLI_Command_t command_tbl[] =
     { "hello" , "Say \"Hello, World\"",      CLI_Hello }
 };
 
-/* ===== public variables ===== */
+/* ===== public constants ===== */
 
-/* provided public variables */
-unsigned char parameterString[COMMAND_STRING_LEN];
-uint8_t       parameterLength;
-
-/* consumed public variables */
 extern volatile uint16_t __m_flash_size;
 extern volatile uint16_t __m_ram_size;
+
+/* ===== private variables ===== */
+
+/* ===== public variables ===== */
 
 /* ===== private functions ===== */
 
 /* ----- start CLI ----- */
 static void startup_cli(void)
 {
+    puts(CLEAR_SCREEN);
     printf("\r\n");
     printf("*----------------------------------------*\r\n");
     printf("*         MSP-EXP430FR5969 LaunchPad     *\r\n");
@@ -86,25 +76,7 @@ static void startup_cli(void)
     printf("\tMain clock (MCLK):       16MHz\r\n");
     printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
     printf("\tSystem console baudrate: 9600bps\r\n");
-    printf("\r\n\r\nmsp430-cli > ");
-}
-
-/* ----- get a command from the input string ----- */
-static void CLI_GetCommand(unsigned char* cmd)
-{
-    uint8_t cmd_len;
-
-    for (cmd_len = 0; cmd_len < parameterLength; cmd_len++)
-    {
-        if ((parameterString[cmd_len] == ' ')
-            || (parameterString[cmd_len] == '\n')
-            || (parameterString[cmd_len] == '\r'))
-        {
-            parameterString[cmd_len] = '\0';
-            break;
-        }
-    }
-    strcpy((char*)cmd, (char*)parameterString);
+    printf("\r\n\r\n%s ", PROMPT);
 }
 
 /* ----- command executing: help ----- */
@@ -114,7 +86,7 @@ static void CLI_Help(void)
     /* Print all commands and description for usage */
     printf( "\r\nPlease input command as follows:");
 
-    for (i = 0; i < COMMAND_LEN(command_tbl); i++)
+    for (i = 0; i < COMMAND_NUM; i++)
     {
         printf("\r\n\t%s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
     }
@@ -127,6 +99,7 @@ static void CLI_Hello(void)
     /* Say "Hello, World!"" */
     printf("\r\nHello, World!");
     printf("\r\nI'm Peter. You'll find me on Earth.");
+    printf("\r\n");
 }
 
 /* ----- command executing: info ----- */
@@ -145,6 +118,7 @@ static void CLI_Info(void)
     printf("\r\n\tAES:             yes");
     printf("\r\n\tBSL:             UART");
     printf("\r\n\tDebug interface: JTAG + Spy-Bi-wire");
+    printf("\r\n");
 }
 
 /* ===== public functions ===== */
@@ -152,14 +126,17 @@ static void CLI_Info(void)
 int main(void)
 {
     unsigned char cmd[32];
-    uint8_t cmd_idx;
+    int cmd_idx;
 
+    /* initilise all modules */
     system_init();
     led_init();
     uart_init();
+    command_init(command_tbl, COMMAND_NUM);
 
     /* show banner */
     startup_cli();
+
     /* enable interrupt */
     __bis_SR_register(GIE);
 
@@ -168,41 +145,27 @@ int main(void)
     while (1)
     {
         /* uart_gets returns a non-NULL pointer when a string is available in uart module */
-        while (uart_gets(parameterString))
+        if (uart_gets(cmd))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
 
-            parameterLength = strlen(parameterString);
+            command_parse(cmd);
 
-            CLI_GetCommand(cmd);
-
-            if (cmd[0] == '\0')
+            switch (cmd_idx = command_get_index(cmd))
             {
-                printf("\r\nMissing command!");
-            }
-            else
-            {
-                for (cmd_idx = 0; cmd_idx < COMMAND_LEN(command_tbl); cmd_idx++)
-                {
-                    if (!strcmp((char*)cmd, (char*)command_tbl[cmd_idx].Command))
-                    {
-                        break;
-                    }
-                }
-
-                if (cmd_idx < COMMAND_LEN(command_tbl))
-                {
-                    /* execute command */
-                    command_tbl[cmd_idx].Command_Func();
-                }
-                else
-                {
-                    printf("\r\nInvalid command!");
-                }
+                case COMMAND_INVALID:
+                    printf("\r\nInvalid command!\r\n");
+                    break;
+                case COMMAND_MISSING:
+                    printf("\r\nMissing command!\r\n");
+                    break;
+                default:
+                    command_get_function(cmd_idx)();
+                    break;
             }
 
-            printf("\r\nmsp430-cli > ");
+            printf("\r\n%s ", PROMPT);
 
             led_off(LED_RED);
             led_on(LED_GREEN);
