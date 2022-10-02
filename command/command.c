@@ -82,6 +82,7 @@ char* command_parse (char* cmd)
     for (i=0; cmd[i] != 0; i++)
     {
         if (   (cmd[i] == ' ' )
+            || (cmd[i] == '\t')
             || (cmd[i] == '\n')
             || (cmd[i] == '\r') )
         {
