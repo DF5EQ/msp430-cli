@@ -14,7 +14,7 @@
 /* ===== public constants ===== */
 
 /* ===== private variables ===== */
-static const CLI_Command_t* command_table;
+static const command_t* command_table;
 static unsigned int command_number;
 
 /* ===== public variables ===== */
@@ -22,7 +22,7 @@ static unsigned int command_number;
 /* ===== private functions ===== */
 
 /* ===== public functions ===== */
-void command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num)
+void command_init (const command_t cmd_tab[], unsigned int cmd_num)
 {
     command_table  = cmd_tab;
     command_number = cmd_num;
@@ -66,7 +66,7 @@ const char* command_get_description (int cmd_idx)
     return command_table[cmd_idx].Command_Desc;
 }
 
-const CLI_Command_Function_t command_get_function (int cmd_idx)
+const command_function_t command_get_function (int cmd_idx)
 {
     if (cmd_idx < 0 || cmd_idx >= command_number)
     {

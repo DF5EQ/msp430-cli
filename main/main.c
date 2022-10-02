@@ -30,21 +30,21 @@
 /* ===== private symbols ===== */
 #define COMMAND_NUM     (sizeof(command_tbl)/sizeof(command_tbl[0]))
 #define CLEAR_SCREEN    "\r\e[2J"
-#define PROMPT          "msp430-cli >"
+#define PROMPT          "msp430 >"
 
 /* ===== private constants ===== */
 
 /* needed forward declarations */
-static void CLI_Help(void);
-static void CLI_Info(void);
-static void CLI_Hello(void);
+static void cmd_help(void);
+static void cmd_info(void);
+static void cmd_hello(void);
 
-static const CLI_Command_t command_tbl[] =
+static const command_t command_tbl[] =
 {
     /* Command, Description,                 Command_Func */
-    { "help"  , "Show a list of commands",   CLI_Help  },
-    { "info"  , "Show all features of MCU",  CLI_Info  },
-    { "hello" , "Say \"Hello, World\"",      CLI_Hello }
+    { "help"  , "Show a list of commands",   cmd_help  },
+    { "info"  , "Show all features of MCU",  cmd_info  },
+    { "hello" , "Say \"Hello, World\"",      cmd_hello }
 };
 
 /* ===== public constants ===== */
@@ -58,8 +58,8 @@ extern volatile uint16_t __m_ram_size;
 
 /* ===== private functions ===== */
 
-/* ----- start CLI ----- */
-static void startup_cli(void)
+/* ----- start ----- */
+static void startup(void)
 {
     puts(CLEAR_SCREEN);
     printf("\r\n");
@@ -80,7 +80,7 @@ static void startup_cli(void)
 }
 
 /* ----- command executing: help ----- */
-static void CLI_Help(void)
+static void cmd_help(void)
 {
     uint8_t i;
     /* Print all commands and description for usage */
@@ -94,7 +94,7 @@ static void CLI_Help(void)
 }
 
 /*----- command executing: hello ----- */
-static void CLI_Hello(void)
+static void cmd_hello(void)
 {
     /* Say "Hello, World!"" */
     printf("\r\nHello, World!");
@@ -103,7 +103,7 @@ static void CLI_Hello(void)
 }
 
 /* ----- command executing: info ----- */
-static void CLI_Info(void)
+static void cmd_info(void)
 {
     printf("\r\n<< Device Info >>");
     printf("\r\n\tCPU:             MSP430FR5969");
@@ -135,7 +135,7 @@ int main(void)
     command_init(command_tbl, COMMAND_NUM);
 
     /* show banner */
-    startup_cli();
+    startup();
 
     /* enable interrupt */
     __bis_SR_register(GIE);

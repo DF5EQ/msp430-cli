@@ -6,14 +6,14 @@
 /* ===== includes ===== */
 
 /* ===== public datatypes ===== */
-typedef void (*CLI_Command_Function_t)(void);
+typedef void (*command_function_t)(void);
 
 typedef struct
 {
     char Command[32];
     char Command_Desc[64];
-    CLI_Command_Function_t Command_Func;
-} CLI_Command_t;
+    command_function_t Command_Func;
+} command_t;
 
 /* ===== public symbols ===== */
 #define COMMAND_INVALID -2
@@ -24,11 +24,11 @@ typedef struct
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void                         command_init (const CLI_Command_t cmd_tab[], unsigned int cmd_num);
+void                         command_init (const command_t cmd_tab[], unsigned int cmd_num);
 int                          command_get_index (char* cmd);
 const char*                  command_get_command (int cmd_idx);
 const char*                  command_get_description (int cmd_idx);
-const CLI_Command_Function_t command_get_function (int cmd_idx);
+const command_function_t command_get_function (int cmd_idx);
 char*                        command_parse (char* cmd);
 #endif
 
