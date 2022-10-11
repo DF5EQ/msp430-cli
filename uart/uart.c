@@ -29,7 +29,7 @@ typedef enum {
 } rx_state_t;
 
 /* ===== private symbols ===== */
-#define RX_BUFFER_SIZE 10
+#define RX_BUFFER_SIZE 40
 
 #define NUL 0x00
 #define BEL 0x07

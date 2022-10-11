@@ -16,6 +16,7 @@ typedef struct
 } command_t;
 
 /* ===== public symbols ===== */
+#define COMMAND_MAX_ARGC 10
 #define COMMAND_INVALID -2
 #define COMMAND_MISSING -1
 
@@ -24,11 +25,11 @@ typedef struct
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void                         command_init (const command_t cmd_tab[], unsigned int cmd_num);
-int                          command_get_index (char* cmd);
-const char*                  command_get_command (int cmd_idx);
-const char*                  command_get_description (int cmd_idx);
+void                     command_init (const command_t cmd_tab[], unsigned int cmd_num);
+int                      command_get_index (char* cmd);
+const char*              command_get_command (int cmd_idx);
+const char*              command_get_description (int cmd_idx);
 const command_function_t command_get_function (int cmd_idx);
-char*                        command_parse (char* cmd);
+char*                    command_parse (char* cmd, int* argc, char* argv[]);
 #endif
 

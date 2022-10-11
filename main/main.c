@@ -128,6 +128,9 @@ int main(void)
     unsigned char cmd[32];
     int cmd_idx;
 
+    int main_argc;
+    char* main_argv[COMMAND_MAX_ARGC];
+
     /* initilise all modules */
     system_init();
     led_init();
@@ -150,7 +153,8 @@ int main(void)
             led_on(LED_RED);
             led_off(LED_GREEN);
 
-            command_parse(cmd);
+            command_parse(cmd, &main_argc, main_argv);
+            printf("argc: %d, argv[0]: %s\n\r", main_argc, main_argv[0]);
 
             switch (cmd_idx = command_get_index(cmd))
             {
