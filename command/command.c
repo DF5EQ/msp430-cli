@@ -18,6 +18,7 @@
 static const command_t* command_table;
 static unsigned int command_number;
 
+/* FIXME TEST */
 static unsigned int command_argc;
 static char*        command_argv [COMMAND_MAX_ARGC];
 
@@ -90,10 +91,6 @@ char* command_parse (char* cmd, int* argc, char* argv[])
     index = 0;
     command_argv[index] = strtok(cmd, delimiter);
 
-    /* FIXME TEST */
-    *argc = 42;
-    argv[0] = "answer";
-
     /* keep getting tokens while one of the delimiters present in cmd */
     while ( (command_argv[index] != NULL) && (index < COMMAND_MAX_ARGC-2) )
     {
@@ -112,11 +109,12 @@ char* command_parse (char* cmd, int* argc, char* argv[])
         index++;
     }
 
-    printf("\r\ncommand_argc: %d\r\n", command_argc);
+    /* TODO replace command_arg* with arg* and delete the following */
+    *argc = command_argc;
     for (i=0; i<index; i++)
     {
-        printf("command_argv[%d]: %s\r\n", i, command_argv[i]);
-    } 
+        argv[i] = command_argv[i];
+    }
 
     return cmd;
 }
