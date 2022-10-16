@@ -9,6 +9,7 @@
 /* ===== private datatypes ===== */
 
 /* ===== private symbols ===== */
+#define COMMAND_DELIMITER " \t\n\r"
 
 /* ===== private constants ===== */
 
@@ -17,10 +18,6 @@
 /* ===== private variables ===== */
 static const command_t* command_table;
 static unsigned int command_number;
-
-/* FIXME TEST */
-static unsigned int command_argc;
-static char*        command_argv [COMMAND_MAX_ARGC];
 
 /* ===== public variables ===== */
 
@@ -82,38 +79,26 @@ const command_function_t command_get_function (int cmd_idx)
 
 char* command_parse (char* cmd, int* argc, char* argv[])
 {
-    const char* delimiter = " \t\n\r";
     int index;
-    int i;
 
     /* get first token */
-    command_argc = 0;
+    *argc = 0;
     index = 0;
-    command_argv[index] = strtok(cmd, delimiter);
+    argv[index] = strtok(cmd, COMMAND_DELIMITER);
 
     /* keep getting tokens while one of the delimiters present in cmd */
-    while ( (command_argv[index] != NULL) && (index < COMMAND_MAX_ARGC-2) )
+    while ( (argv[index] != NULL) && (index < COMMAND_MAX_ARGC-2) )
     {
-        command_argc++;
+        (*argc)++;
         index++;
-        command_argv[index] = strtok(NULL, delimiter);
+        argv[index] = strtok(NULL, COMMAND_DELIMITER);
     }
 
     /* get rest of tokens if too much tokens in cmd */
     if(index == COMMAND_MAX_ARGC-2)
     {
-        command_argc++;
-        index++;
-        command_argv[index] = strtok(NULL, NULL);
-        command_argc++;
-        index++;
-    }
-
-    /* TODO replace command_arg* with arg* and delete the following */
-    *argc = command_argc;
-    for (i=0; i<index; i++)
-    {
-        argv[i] = command_argv[i];
+        *argc = COMMAND_MAX_ARGC;
+        argv[COMMAND_MAX_ARGC-1] = strtok(NULL, NULL);
     }
 
     return cmd;
