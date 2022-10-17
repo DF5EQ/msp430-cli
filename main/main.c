@@ -35,9 +35,9 @@
 /* ===== private constants ===== */
 
 /* needed forward declarations */
-static void cmd_help(void);
-static void cmd_info(void);
-static void cmd_hello(void);
+static void cmd_help(int argc, char* argv[]);
+static void cmd_info(int argc, char* argv[]);
+static void cmd_hello(int argc, char* argv[]);
 
 static const command_t command_tbl[] =
 {
@@ -80,7 +80,7 @@ static void startup(void)
 }
 
 /* ----- command executing: help ----- */
-static void cmd_help(void)
+static void cmd_help(int argc, char* argv[])
 {
     uint8_t i;
     /* Print all commands and description for usage */
@@ -94,16 +94,23 @@ static void cmd_help(void)
 }
 
 /*----- command executing: hello ----- */
-static void cmd_hello(void)
+static void cmd_hello(int argc, char* argv[])
 {
     /* Say "Hello, World!"" */
     printf("\r\nHello, World!");
-    printf("\r\nI'm Peter. You'll find me on Earth.");
+    if (argc == 1)
+    {
+        printf("\r\nI'm Peter. You'll find me on Earth.");
+    }
+    else
+    {
+        printf("\r\nI'm %s. You'll find me on Earth.", argv[1]);
+    }
     printf("\r\n");
 }
 
 /* ----- command executing: info ----- */
-static void cmd_info(void)
+static void cmd_info(int argc, char* argv[])
 {
     printf("\r\n<< Device Info >>");
     printf("\r\n\tCPU:             MSP430FR5969");
@@ -171,7 +178,7 @@ int main(void)
                     printf("\r\nMissing command!\r\n");
                     break;
                 default:
-                    command_get_function(cmd_idx)();
+                    command_get_function(cmd_idx)(main_argc, main_argv);
                     break;
             }
 

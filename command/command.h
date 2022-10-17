@@ -6,7 +6,7 @@
 /* ===== includes ===== */
 
 /* ===== public datatypes ===== */
-typedef void (*command_function_t)(void);
+typedef void (*command_function_t)(int argc, char* argv[]);
 
 typedef struct
 {
