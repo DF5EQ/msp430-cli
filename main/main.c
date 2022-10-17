@@ -38,13 +38,15 @@
 static void cmd_help(int argc, char* argv[]);
 static void cmd_info(int argc, char* argv[]);
 static void cmd_hello(int argc, char* argv[]);
+static void cmd_showarg(int argc, char* argv[]);
 
 static const command_t command_tbl[] =
 {
     /* Command, Description,                 Command_Func */
-    { "help"  , "Show a list of commands",   cmd_help  },
-    { "info"  , "Show all features of MCU",  cmd_info  },
-    { "hello" , "Say \"Hello, World\"",      cmd_hello }
+    { "help"   , "Show a list of commands",   cmd_help    },
+    { "info"   , "Show all features of MCU",  cmd_info    },
+    { "hello"  , "Say \"Hello, World\"",      cmd_hello   },
+    { "showarg", "show arguments of command", cmd_showarg }
 };
 
 /* ===== public constants ===== */
@@ -88,7 +90,7 @@ static void cmd_help(int argc, char* argv[])
 
     for (i = 0; i < COMMAND_NUM; i++)
     {
-        printf("\r\n\t%s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
+        printf("\r\n\t%-8s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
     }
     printf("\r\n");
 }
@@ -128,6 +130,18 @@ static void cmd_info(int argc, char* argv[])
     printf("\r\n");
 }
 
+/* ----- command executing: showarg ----- */
+static void cmd_showarg(int argc, char* argv[])
+{
+    int i;
+
+    printf("\n\rargc: %d\n\r", argc);
+    for (i=0; i<argc; i++)
+    {
+        printf("argv[%d]: %s\n\r", i, argv[i]);
+    }
+}
+
 /* ===== public functions ===== */
 
 int main(void)
@@ -163,11 +177,6 @@ int main(void)
             led_off(LED_GREEN);
 
             command_parse(cmd, &main_argc, main_argv);
-            printf("\n\rargc: %d\n\r", main_argc);
-            for (i=0; i<main_argc; i++)
-            {
-                printf("argv[%d]: %s\n\r", i, main_argv[i]);
-            }
 
             switch (cmd_idx = command_get_index(cmd))
             {
