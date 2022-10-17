@@ -3,11 +3,13 @@
 /* ===== includes ===== */
 #include <msp430.h>
 #include <stdio.h>
+#include <string.h>
 #include "command.h"
 
 /* ===== private datatypes ===== */
 
 /* ===== private symbols ===== */
+#define COMMAND_DELIMITER " \t\n\r"
 
 /* ===== private constants ===== */
 
@@ -75,20 +77,30 @@ const command_function_t command_get_function (int cmd_idx)
     return command_table[cmd_idx].Command_Func;
 }
 
-char* command_parse (char* cmd)
+char* command_parse (char* cmd, int* argc, char* argv[])
 {
-    int i;
+    int index;
 
-    for (i=0; cmd[i] != 0; i++)
+    /* get first token */
+    *argc = 0;
+    index = 0;
+    argv[index] = strtok(cmd, COMMAND_DELIMITER);
+
+    /* keep getting tokens while one of the delimiters present in cmd */
+    while ( (argv[index] != NULL) && (index < COMMAND_MAX_ARGC-2) )
     {
-        if (   (cmd[i] == ' ' )
-            || (cmd[i] == '\t')
-            || (cmd[i] == '\n')
-            || (cmd[i] == '\r') )
-        {
-            cmd[i] = 0;
-        }
+        (*argc)++;
+        index++;
+        argv[index] = strtok(NULL, COMMAND_DELIMITER);
     }
+
+    /* get rest of tokens if too much tokens in cmd */
+    if(index == COMMAND_MAX_ARGC-2)
+    {
+        *argc = COMMAND_MAX_ARGC;
+        argv[COMMAND_MAX_ARGC-1] = strtok(NULL, NULL);
+    }
+
     return cmd;
 }
 
