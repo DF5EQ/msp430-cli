@@ -36,7 +36,7 @@ typedef struct
 
 /* ===== private symbols ===== */
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
-#define COMMAND_STRING_LEN 128
+#define COMMAND_STRING_LEN UART_RX_BUFFER_SIZE
 
 /* ===== private constants ===== */
 

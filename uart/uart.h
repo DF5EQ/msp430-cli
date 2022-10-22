@@ -23,6 +23,7 @@
 /* ===== public datatypes ===== */
 
 /* ===== public symbols ===== */
+#define UART_RX_BUFFER_SIZE 50
 
 /* ===== public constants ===== */
 
