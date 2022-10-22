@@ -29,8 +29,6 @@ typedef enum {
 } rx_state_t;
 
 /* ===== private symbols ===== */
-#define RX_BUFFER_SIZE 40
-
 #define NUL 0x00
 #define BEL 0x07
 #define BS  0x08
@@ -49,7 +47,7 @@ typedef enum {
 /* ===== public constants ===== */
 
 /* ===== private variables ===== */
-static char rx_buffer[RX_BUFFER_SIZE];
+static char rx_buffer[UART_RX_BUFFER_SIZE];
 static char rx_buffer_index;
 static rx_state_t rx_state;
 
@@ -92,7 +90,7 @@ static void uart_rx (unsigned char c)
                 default:
                         if( c >= 0x20 && c <= 0x7f )
                         {
-                            if( rx_buffer_index == RX_BUFFER_SIZE-1 )
+                            if( rx_buffer_index == UART_RX_BUFFER_SIZE-1 )
                             {
                                 putchar(BEL);
                             }
@@ -239,7 +237,7 @@ void uart_init(void)
     UCA0IE |= UCRXIE;
 
     /* clear rx buffer */
-    memset(rx_buffer, 0, RX_BUFFER_SIZE);
+    memset(rx_buffer, 0, UART_RX_BUFFER_SIZE);
 
     /* reset buffer index */
     rx_buffer_index = 0;
@@ -276,7 +274,7 @@ char* uart_gets (char* s)
     if(rx_state == RX_FULL)
     {
         strcpy(s, rx_buffer);
-        memset(rx_buffer, 0, RX_BUFFER_SIZE);
+        memset(rx_buffer, 0, UART_RX_BUFFER_SIZE);
         rx_buffer_index = 0;
         rx_state = RX_RUNNING;
         return s;

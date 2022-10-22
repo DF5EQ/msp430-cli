@@ -32,6 +32,9 @@
 #define CLEAR_SCREEN    "\r\e[2J"
 #define PROMPT          "msp430 >"
 
+#define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
+#define COMMAND_STRING_LEN UART_RX_BUFFER_SIZE
+
 /* ===== private constants ===== */
 
 /* needed forward declarations */
