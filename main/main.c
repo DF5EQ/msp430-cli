@@ -191,10 +191,8 @@ static void cmd_showarg(int argc, char* argv[])
 
 int main(void)
 {
-    unsigned char cmd[32];
+    unsigned char cmd[COMMAND_STRING_LEN];
     int cmd_idx;
-
-    int i;
 
     int main_argc;
     char* main_argv[COMMAND_MAX_ARGC];
