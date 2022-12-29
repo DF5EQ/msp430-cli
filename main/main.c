@@ -201,6 +201,7 @@ int main(void)
     system_init();
     led_init();
     uart_init();
+    line_init();
     command_init(command_tbl, COMMAND_NUM);
 
     /* show banner */
@@ -214,7 +215,7 @@ int main(void)
     while (1)
     {
         /* uart_gets returns a non-NULL pointer when a string is available in uart module */
-        if (uart_gets(cmd))
+        if (line_gets(cmd))
         {
             led_on(LED_RED);
             led_off(LED_GREEN);
