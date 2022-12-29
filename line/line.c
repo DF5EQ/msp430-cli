@@ -1,7 +1,7 @@
 /* ===== file header ===== */
 
 /* ===== includes ===== */
-#include "terminal.h"
+#include "line.h"
 
 /* ===== private datatypes ===== */
 
@@ -20,11 +20,11 @@
 /* ===== public functions ===== */
 
 /*************************************************************************
-Purpose: initialize terminal module
+Purpose: initialize line module
 Input  : none
 Return : none
 **************************************************************************/
-void terminal_init (void)
+void line_init (void)
 {
 }
 
@@ -38,7 +38,7 @@ Return : 0x0100..0x7fff -  256.. 32767 -
          0xffff..0xff00 -   -1..  -256 - index for ansi string to send to terminal
          0xfeff..0x8000 - -257..-32768 - error (buffer overflow and the like)
 **************************************************************************/
-int terminal_putc (char c)
+int line_putc (char c)
 {
     return 0;
 }
@@ -50,7 +50,7 @@ Return : >0 - number of character transferred, length of string without trailing
           0 - no pointer to external buffer provided
          -1 - no string available
 **************************************************************************/
-int terminal_gets (char* s)
+int line_gets (char* s)
 {
     return 0;
 }

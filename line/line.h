@@ -1,7 +1,7 @@
 /* ===== file header ===== */
 
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#ifndef LINE_H
+#define LINE_H
 
 /* ===== includes ===== */
 #include <msp430.h>
@@ -23,7 +23,7 @@
 //#define DELETE_TO_LINEEND "\x1b[0K"
 
 /* ===== public constants ===== */
-enum terminal_srings_index
+enum line_strings_index
 {
     CURSOR_RIGHT,
     CURSOR_LEFT,
@@ -32,7 +32,7 @@ enum terminal_srings_index
     DELETE_TO_LINEEND
 };
 
-const char* terminal_srings[] =
+const char* line_strings[] =
 {
     "\x1b[C",    /* CURSOR_RIGHT      */
     "\x1b[D",    /* CURSOR_LEFT       */
@@ -44,9 +44,9 @@ const char* terminal_srings[] =
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void terminal_init (void);
-int  terminal_putc (char c);
-int  terminal_gets (char* s);
+void line_init (void);
+int  line_putc (char c);
+int  line_gets (char* s);
 
 #endif
 
