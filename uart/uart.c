@@ -18,6 +18,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "uart.h"
+#include "line.h"
 
 /* ===== private datatypes ===== */
 typedef enum {
@@ -54,140 +55,6 @@ static rx_state_t rx_state;
 /* ===== public variables ===== */
 
 /* ===== private functions ===== */
-static void uart_rx (unsigned char c)
-{
-    switch(rx_state)
-    {
-        case RX_RUNNING:
-            switch(c)
-            {
-                case BS: /* delete to left */
-                    if(rx_buffer_index == 0)
-                    {
-                        putchar(BEL);
-                    }
-                    else
-                    {
-                        /* update terminal */
-                        uart_puts(CURSOR_LEFT);
-                        uart_puts(CURSOR_SAVE);
-                        uart_puts(DELETE_TO_LINEEND);
-                        uart_puts(&rx_buffer[rx_buffer_index]);
-                        uart_puts(CURSOR_RESTORE);
-
-                        /* update buffer */
-                        rx_buffer_index--;
-                        strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
-                    }
-                    break;
-                case ESC: /* change state */
-                    rx_state = RX_ESC;
-                    break;
-                case CR:
-                case LF:
-                    rx_state = RX_FULL;
-                    break;
-                default:
-                        if( c >= 0x20 && c <= 0x7f )
-                        {
-                            if( rx_buffer_index == UART_RX_BUFFER_SIZE-1 )
-                            {
-                                putchar(BEL);
-                            }
-                            else
-                            {
-                                /* store character */
-                                rx_buffer[rx_buffer_index] = c;
-                                rx_buffer_index++;
-
-                                /* echo character */
-                                putchar(c);
-                            }
-                        }
-                    break;
-            }
-            break;
-
-        case RX_ESC:
-            switch(c)
-            {
-                case '[':
-                    rx_state = RX_ESC_SBO;
-                    break;
-                default:
-                    rx_state = RX_RUNNING;
-                    break;
-            }
-            break;
-
-        case RX_ESC_SBO:
-            switch(c)
-            {
-                case 'C': /* cursor right */
-                    if(rx_buffer[rx_buffer_index] == 0)
-                    {
-                        putchar(BEL);
-                    }
-                    else
-                    {
-                        uart_puts(CURSOR_RIGHT);
-                        rx_buffer_index++;
-                    }
-                    rx_state = RX_RUNNING;
-                    break;
-                case 'D': /* cursor left */
-                    if(rx_buffer_index == 0)
-                    {
-                        putchar(BEL);
-                    }
-                    else
-                    {
-                        uart_puts(CURSOR_LEFT);
-                        rx_buffer_index--;
-                    }
-                    rx_state = RX_RUNNING;
-                    break;
-                case '3': /* delete */
-                    if(rx_buffer[rx_buffer_index] == 0)
-                    {
-                        putchar(BEL);
-                    }
-                    else
-                    {
-                        /* update terminal */
-                        uart_puts(CURSOR_SAVE);
-                        uart_puts(DELETE_TO_LINEEND);
-                        uart_puts(&rx_buffer[rx_buffer_index+1]);
-                        uart_puts(CURSOR_RESTORE);
-
-                        /* update buffer */
-                        strcpy(&rx_buffer[rx_buffer_index], &rx_buffer[rx_buffer_index+1]);
-
-                        /* next state */
-                        rx_state = RX_ESC_SBO_TILDE;
-                    }
-                    break;
-                case '2': /* insert */
-                case '5': /* page up */
-                case '6': /* page down */
-                    rx_state = RX_ESC_SBO_TILDE;
-                    break;
-                default:
-                    rx_state = RX_RUNNING;
-                    break;
-            }
-            break;
-
-        case RX_ESC_SBO_TILDE:
-            rx_state = RX_RUNNING;
-            break;
-
-        case RX_FULL:
-            /* nothing to do here */
-            /* exit after external read of buffer */
-            break;
-    }
-}
 
 /* ===== interrupt functions ===== */
 #pragma vector = USCI_A0_VECTOR
@@ -201,7 +68,7 @@ __interrupt void uart_interrupt (void)
             /* read byte from serial line */
             /* store in buffer            */
             /* send echo                  */
-            uart_rx(UCA0RXBUF);
+            line_putc(UCA0RXBUF);
             break;
         case 0x04:  // Vector 4: UCTXIFG
             break;
