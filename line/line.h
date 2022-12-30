@@ -5,6 +5,7 @@
 
 /* ===== includes ===== */
 #include <msp430.h>
+#include "uart.h" // TODO would be good to not need this
 
 /* ===== public datatypes ===== */
 
