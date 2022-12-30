@@ -306,17 +306,16 @@ Input  : none
 Returns: low byte  - received byte from ringbuffer
          high byte - last receive error
 **************************************************************************/
-uint16_t uart_getc(void)
+int16_t uart_getc(void)
 {
 	uint16_t tmptail;
-	uint8_t data;
 
     ATOMIC_BLOCK_RESTORESTATE
     (
         if (UART_RxHead == UART_RxTail)
         {
             /* no data available */
-            return UART_NO_DATA;
+            return EOF;
         }
     )
 
@@ -324,10 +323,8 @@ uint16_t uart_getc(void)
 	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
 	UART_RxTail = tmptail;
 
-	/* get data from receive buffer */
-	data = UART_RxBuf[tmptail];
-
-	return (UART_LastRxError << 8) + data;
+	/* return data from receive buffer */
+	return UART_RxBuf[tmptail];;
 }
 
 /*************************************************************************
@@ -437,24 +434,5 @@ void uart_flush(void)
 /* ===== alias for public functions ===== */
 
 int putchar(int c) __attribute__((alias("uart_putc")));
-
-/*************************************************************************
-temporary wrappers
-TODO to be removed
-**************************************************************************/
-
-int getchar (void)
-{
-    uint16_t c;
-
-    c = uart_getc();
-
-    /* check for errors, no data is valued as error */
-    if(c & 0xff00)
-    {
-        return EOF;
-    }
-
-    return c & 0x00ff;
-}
+int getchar(void)  __attribute__((alias("uart_getc")));
 
