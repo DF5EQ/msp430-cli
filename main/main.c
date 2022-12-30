@@ -215,36 +215,38 @@ int main(void)
 
     while (1)
     {
-        c = getchar();
-        if (c != EOF)
+        /* wait for char input */
+        while( (c=getchar()) == EOF);
+
+        /* send character to line evaluation */
+        /* update terminal accordingly */
+        line_putc(c);
+
+        /* line_gets returns a non-NULL pointer when a line is available */
+        if (line_gets(cmd))
         {
-            line_putc(c);
-            /* line_gets returns a non-NULL pointer when a line is available */
-            if (line_gets(cmd))
+            led_on(LED_RED);
+            led_off(LED_GREEN);
+
+            command_parse(cmd, &main_argc, main_argv);
+
+            switch (cmd_idx = command_get_index(cmd))
             {
-                led_on(LED_RED);
-                led_off(LED_GREEN);
-
-                command_parse(cmd, &main_argc, main_argv);
-
-                switch (cmd_idx = command_get_index(cmd))
-                {
-                    case COMMAND_INVALID:
-                        printf("\r\nInvalid command!\r\n");
-                        break;
-                    case COMMAND_MISSING:
-                        printf("\r\nMissing command!\r\n");
-                        break;
-                    default:
-                        command_get_function(cmd_idx)(main_argc, main_argv);
-                        break;
-                }
-
-                printf("\r\n%s ", PROMPT);
-
-                led_off(LED_RED);
-                led_on(LED_GREEN);
+                case COMMAND_INVALID:
+                    printf("\r\nInvalid command!\r\n");
+                    break;
+                case COMMAND_MISSING:
+                    printf("\r\nMissing command!\r\n");
+                    break;
+                default:
+                    command_get_function(cmd_idx)(main_argc, main_argv);
+                    break;
             }
+
+            printf("\r\n%s ", PROMPT);
+
+            led_off(LED_RED);
+            led_on(LED_GREEN);
         }
     }
 }
