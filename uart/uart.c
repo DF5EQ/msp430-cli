@@ -410,7 +410,7 @@ Purpose: Determine the number of bytes waiting in the receive buffer
 Input  : none
 Returns: Number of bytes in the receive buffer
 **************************************************************************/
-uint16_t uart_available(void)
+int16_t uart_available(void)
 {
 	uint16_t ret;
 
@@ -418,7 +418,7 @@ uint16_t uart_available(void)
     (
         ret = (UART_RX_BUFFER_SIZE + UART_RxHead - UART_RxTail) & UART_RX_BUFFER_MASK;
     )
-	return ret;
+	return (int16_t)ret;
 }
 
 /*************************************************************************

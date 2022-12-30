@@ -103,13 +103,13 @@ See README.md for more detailed information.
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-void     uart_init      (void);
-int16_t  uart_getc      (void);
-int16_t  uart_peek      (void);
-int16_t  uart_putc      (int data);
-int16_t  uart_puts      (const char *s);
-uint16_t uart_available (void);
-void     uart_flush     (void);
+void    uart_init      (void);
+int16_t uart_getc      (void);
+int16_t uart_peek      (void);
+int16_t uart_putc      (int c);
+int16_t uart_puts      (const char *s);
+int16_t uart_available (void);
+void    uart_flush     (void);
 
 #endif
 
