@@ -103,9 +103,6 @@ See README.md for more detailed information.
 /* ===== public variables ===== */
 
 /* ===== public functions ===== */
-int putchar (int c);
-int getchar (void);
-
 void     uart_init      (void);
 int16_t  uart_getc      (void);
 uint16_t uart_peek      (void);
