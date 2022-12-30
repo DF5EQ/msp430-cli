@@ -78,6 +78,7 @@ See README.md for more detailed information.
 /* ===== includes ===== */
 #include <msp430.h>
 #include <stdint.h>
+#include <stdio.h>
 
 /* ===== public datatypes ===== */
 

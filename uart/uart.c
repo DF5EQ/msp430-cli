@@ -448,8 +448,14 @@ int getchar (void)
     uint16_t c;
 
     c = uart_getc();
-    c &= 0x00ff;
-    return c;
+
+    /* check for errors, no data is valued as error */
+    if(c & 0xff00)
+    {
+        return EOF;
+    }
+
+    return c & 0x00ff;
 }
 
 int puts (char const *s)
