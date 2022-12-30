@@ -275,7 +275,7 @@ void uart_init(void)
     P2SEL1 |=   BIT0 | BIT1;
     P2SEL0 &= ~(BIT0 | BIT1);
 
-    /* configure eUSCI_A0 for UART mode 9600 8N1 */
+    /* configure eUSCI_A0 for UART mode 8N1 */
     UCA0CTLW0  = UCSWRST;       /* put eUSCI in reset */
     UCA0CTLW0 |= UCSSEL__SMCLK; /* BRCLK = SMCLK */
     UCA0BRW    = UCAxBRW;       /* see SLAU367P table 30-5 */
@@ -294,8 +294,6 @@ Returns : next character from reveive buffer converted to int
 **************************************************************************/
 int16_t uart_getc(void)
 {
-	uint16_t tmptail;
-
     ATOMIC_BLOCK_RESTORESTATE
     (
         if (UART_RxHead == UART_RxTail)
@@ -305,12 +303,11 @@ int16_t uart_getc(void)
         }
     )
 
-	/* calculate / store buffer index */
-	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
-	UART_RxTail = tmptail;
+	/* advance buffer index */
+	UART_RxTail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
 
 	/* return data from receive buffer */
-	return UART_RxBuf[tmptail];;
+	return UART_RxBuf[UART_RxTail];;
 }
 
 /*************************************************************************
@@ -324,7 +321,6 @@ Returns : next character from receive buffer converted to int
 int16_t uart_peek(void)
 {
 	uint16_t tmptail;
-	uint8_t data;
 
     ATOMIC_BLOCK_RESTORESTATE
     (
