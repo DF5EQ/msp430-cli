@@ -358,19 +358,6 @@ int16_t uart_puts(const char *s)
     return num_char;
 }
 
-/*************************************************************************
-Purpose : flush characters waiting in receive buffer, ignore them.
-Input   : none
-Returns : none
-**************************************************************************/
-void uart_flush(void)
-{
-    ATOMIC_BLOCK_RESTORESTATE
-    (
-        UART_RxHead = UART_RxTail;
-    )
-}
-
 /* ===== alias for public functions ===== */
 
 int putchar(int c) __attribute__((alias("uart_putc")));
