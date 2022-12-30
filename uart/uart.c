@@ -336,7 +336,7 @@ Input  : none
 Returns: low byte  - next byte in ring buffer
          high byte - last receive error
 **************************************************************************/
-uint16_t uart_peek(void)
+int16_t uart_peek(void)
 {
 	uint16_t tmptail;
 	uint8_t data;
@@ -346,17 +346,15 @@ uint16_t uart_peek(void)
         if (UART_RxHead == UART_RxTail)
         {
             /* no data available */
-            return UART_NO_DATA;
+            return EOF;
 	    }
     )
 
 	/* calculate buffer index */
 	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
 
-	/* get data from receive buffer */
-	data = UART_RxBuf[tmptail];
-
-	return (UART_LastRxError << 8) + data;
+	/* return data from receive buffer */
+	return UART_RxBuf[tmptail];
 }
 
 /*************************************************************************
