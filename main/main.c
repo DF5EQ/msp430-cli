@@ -205,11 +205,11 @@ int main(void)
     line_init();
     command_init(command_tbl, COMMAND_NUM);
 
-    /* show banner */
-    startup();
-
     /* enable interrupt */
     __bis_SR_register(GIE);
+
+    /* show banner */
+    startup();
 
     led_on(LED_GREEN);
 
