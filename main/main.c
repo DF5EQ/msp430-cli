@@ -68,7 +68,7 @@ extern volatile uint16_t __m_ram_size;
 static void startup(void)
 {
     puts(CLEAR_SCREEN);
-    printf("\r\n");
+    printf("\n\r");
     printf("*----------------------------------------*\n\r");
     printf("*         MSP-EXP430FR5969 LaunchPad     *\n\r");
     printf("*         Command Line Interface         *\n\r");
@@ -90,29 +90,29 @@ static void cmd_help(int argc, char* argv[])
 {
     uint8_t i;
     /* Print all commands and description for usage */
-    printf( "\r\nPlease input command as follows:");
+    printf( "\n\rPlease input command as follows:");
 
     for (i = 0; i < COMMAND_NUM; i++)
     {
-        printf("\r\n\t%-8s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
+        printf("\n\r\t%-8s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
     }
-    printf("\r\n");
+    printf("\n\r");
 }
 
 /*----- command executing: hello ----- */
 static void cmd_hello(int argc, char* argv[])
 {
     /* Say "Hello, World!"" */
-    printf("\r\nHello, World!");
+    printf("\n\rHello, World!");
     if (argc == 1)
     {
-        printf("\r\nI'm Peter. You'll find me on Earth.");
+        printf("\n\rI'm Peter. You'll find me on Earth.");
     }
     else
     {
-        printf("\r\nI'm %s. You'll find me on Earth.", argv[1]);
+        printf("\n\rI'm %s. You'll find me on Earth.", argv[1]);
     }
-    printf("\r\n");
+    printf("\n\r");
 }
 
 /* ----- command executing: info ----- */
@@ -121,59 +121,59 @@ static void cmd_info(int argc, char* argv[])
     switch(argc)
     {
         case 1:
-            printf("\r\nCPU            : MSP430FR5969");
-            printf("\r\nArchitecture   : 16bit RISC Architecture");
-            printf("\r\nCPU clock      : 16MHz");
-            printf("\r\nFRAM           : 64kB");
-            printf("\r\nSRAM           : 2kB");
-            printf("\r\nADC            : 12-bit, 16 ext, 2 int channels");
-            printf("\r\nComparator     : 16 channels");
-            printf("\r\nTimer          : 2 Timer A, 7 Timer B");
-            printf("\r\nComunication   : 2 I2C/SPI/UART");
-            printf("\r\nAES            : yes");
-            printf("\r\nBSL            : UART");
-            printf("\r\nDebug interface: JTAG + Spy-Bi-wire");
+            printf("\n\rCPU            : MSP430FR5969");
+            printf("\n\rArchitecture   : 16bit RISC Architecture");
+            printf("\n\rCPU clock      : 16MHz");
+            printf("\n\rFRAM           : 64kB");
+            printf("\n\rSRAM           : 2kB");
+            printf("\n\rADC            : 12-bit, 16 ext, 2 int channels");
+            printf("\n\rComparator     : 16 channels");
+            printf("\n\rTimer          : 2 Timer A, 7 Timer B");
+            printf("\n\rComunication   : 2 I2C/SPI/UART");
+            printf("\n\rAES            : yes");
+            printf("\n\rBSL            : UART");
+            printf("\n\rDebug interface: JTAG + Spy-Bi-wire");
             break;
 
         case 2:
             if( strcmp(argv[1], "cpu") == 0 )
             {
-                printf("\r\nCPU      : MSP430FR5969");
-                printf("\r\nCPU clock: 16MHz");
+                printf("\n\rCPU      : MSP430FR5969");
+                printf("\n\rCPU clock: 16MHz");
             }
             else if( strcmp(argv[1], "arch") == 0 )
             {
-                printf("\r\nArchitecture: 16bit RISC Architecture");
+                printf("\n\rArchitecture: 16bit RISC Architecture");
             }
             else if( strcmp(argv[1], "mem") == 0 )
             {
-                printf("\r\nFRAM: 64kB");
-                printf("\r\nSRAM:  2kB");
+                printf("\n\rFRAM: 64kB");
+                printf("\n\rSRAM:  2kB");
             }
             else if( strcmp(argv[1], "peri") == 0 )
             {
-                printf("\r\nADC         : 12-bit, 16 ext, 2 int channels");
-                printf("\r\nComparator  : 16 channels");
-                printf("\r\nTimer       : 2 Timer A, 7 Timer B");
-                printf("\r\nComunication: 2 I2C/SPI/UART");
+                printf("\n\rADC         : 12-bit, 16 ext, 2 int channels");
+                printf("\n\rComparator  : 16 channels");
+                printf("\n\rTimer       : 2 Timer A, 7 Timer B");
+                printf("\n\rComunication: 2 I2C/SPI/UART");
             }
             else if( strcmp(argv[1], "misc") == 0 )
             {
-                printf("\r\nAES            : yes");
-                printf("\r\nBSL            : UART");
-                printf("\r\nDebug interface: JTAG + Spy-Bi-wire");
+                printf("\n\rAES            : yes");
+                printf("\n\rBSL            : UART");
+                printf("\n\rDebug interface: JTAG + Spy-Bi-wire");
              }
             else
             {
-                printf("\r\nInvalid argument!");           
+                printf("\n\rInvalid argument!");           
             }
             break;
 
         default:
-            printf("\r\nInvalid number of arguments!");
+            printf("\n\rInvalid number of arguments!");
             break;
     }
-    printf("\r\n");
+    printf("\n\r");
 }
 
 /* ----- command executing: showarg ----- */
@@ -234,17 +234,17 @@ int main(void)
             switch (cmd_idx = command_get_index(cmd))
             {
                 case COMMAND_INVALID:
-                    printf("\r\nInvalid command!\r\n");
+                    printf("\n\rInvalid command!\n\r");
                     break;
                 case COMMAND_MISSING:
-                    printf("\r\nMissing command!\r\n");
+                    printf("\n\rMissing command!\n\r");
                     break;
                 default:
                     command_get_function(cmd_idx)(main_argc, main_argv);
                     break;
             }
 
-            printf("\r\n%s ", PROMPT);
+            printf("\n\r%s ", PROMPT);
 
             led_off(LED_RED);
             led_on(LED_GREEN);
