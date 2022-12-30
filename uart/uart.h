@@ -99,7 +99,6 @@ See README.md for more detailed information.
 /* ===== public functions ===== */
 void    uart_init      (void);
 int16_t uart_getc      (void);
-int16_t uart_peek      (void);
 int16_t uart_putc      (int c);
 int16_t uart_puts      (const char *s);
 int16_t uart_available (void);

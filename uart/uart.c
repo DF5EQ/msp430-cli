@@ -311,34 +311,6 @@ int16_t uart_getc(void)
 }
 
 /*************************************************************************
-Purpose : return next character from receive buffer without removing it
-          from receive buffer. That is, successive calls to uart_peek()
-          will return same character, as will the next call to uart_getc()
-Input   : none
-Returns : next character from receive buffer converted to int 
-          EOF if no new character available
-**************************************************************************/
-int16_t uart_peek(void)
-{
-	uint16_t tmptail;
-
-    ATOMIC_BLOCK_RESTORESTATE
-    (
-        if (UART_RxHead == UART_RxTail)
-        {
-            /* no data available */
-            return EOF;
-	    }
-    )
-
-	/* calculate buffer index */
-	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
-
-	/* return data from receive buffer */
-	return UART_RxBuf[tmptail];
-}
-
-/*************************************************************************
 Purpose : write character to transmitt buffer
 Input   : character to write
 Returns : written character
