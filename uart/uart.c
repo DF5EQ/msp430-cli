@@ -270,6 +270,7 @@ __interrupt void uart_interrupt (void)
 }
 
 /* ===== public functions ===== */
+
 /*************************************************************************
 Purpose : initialize UART and set baudrate
 Input   : baudrate using defines
@@ -301,10 +302,10 @@ void uart_init(void)
 }
 
 /*************************************************************************
-Purpose: return byte from ringbuffer
-Input  : none
-Returns: low byte  - received byte from ringbuffer
-         high byte - last receive error
+Purpose : return next character from receive buffer
+Input   : none
+Returns : next character from reveive buffer converted to int 
+          EOF if no new character available
 **************************************************************************/
 int16_t uart_getc(void)
 {
@@ -328,13 +329,12 @@ int16_t uart_getc(void)
 }
 
 /*************************************************************************
-Purpose: Returns the next byte (character) of incoming UART data without
-         removing it from the ring buffer. That is, successive calls to
-		 uart_peek() will return the same character, as will the next
-		 call to uart_getc()
-Input  : none
-Returns: low byte  - next byte in ring buffer
-         high byte - last receive error
+Purpose : return next character from receive buffer without removing it
+          from receive buffer. That is, successive calls to uart_peek()
+          will return same character, as will the next call to uart_getc()
+Input   : none
+Returns : next character from receive buffer converted to int 
+          EOF if no new character available
 **************************************************************************/
 int16_t uart_peek(void)
 {
@@ -358,9 +358,9 @@ int16_t uart_peek(void)
 }
 
 /*************************************************************************
-Purpose: write byte to ringbuffer for transmitting via UART
-Input  : byte to be transmitted
-Returns: none
+Purpose : write character to transmitt buffer
+Input   : character to write
+Returns : written character
 **************************************************************************/
 int16_t uart_putc(int16_t c)
 {
@@ -388,9 +388,9 @@ int16_t uart_putc(int16_t c)
 }
 
 /*************************************************************************
-Purpose: transmit string to UART
-Input  : string to be transmitted
-Returns: none
+Purpose : write string to transmitt buffer
+Input   : string to write
+Returns : number of written characters
 **************************************************************************/
 int16_t uart_puts(const char *s)
 {
@@ -406,9 +406,9 @@ int16_t uart_puts(const char *s)
 }
 
 /*************************************************************************
-Purpose: Determine the number of bytes waiting in the receive buffer
-Input  : none
-Returns: Number of bytes in the receive buffer
+Purpose : determine number of bytes waiting in receive buffer
+Input   : none
+Returns : number of characters in receive buffer
 **************************************************************************/
 int16_t uart_available(void)
 {
@@ -422,9 +422,9 @@ int16_t uart_available(void)
 }
 
 /*************************************************************************
-Purpose: Flush bytes waiting the receive buffer. Actually ignores them.
-Input  : none
-Returns: none
+Purpose : flush characters waiting in receive buffer, ignore them.
+Input   : none
+Returns : none
 **************************************************************************/
 void uart_flush(void)
 {
