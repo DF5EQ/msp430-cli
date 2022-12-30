@@ -180,7 +180,6 @@ static volatile uint8_t UART_TxHead;
 static volatile uint8_t UART_TxTail;
 static volatile uint8_t UART_RxHead;
 static volatile uint8_t UART_RxTail;
-static volatile uint8_t UART_LastRxError;
 
 /* ===== public variables ===== */
 
@@ -193,32 +192,18 @@ Purpose : called when the UART has received a character
 static void uart_rx (void)
 {
     uint16_t tmphead;
-    uint8_t data;
-    uint8_t usr;
-    uint8_t lastRxError;
-
-    /* read UART status register and UART data register */
-    data        = UCA0RXBUF;
-    usr         = 0; /* TODO which register is here equivalent to avr's USART0_RXDATAH resp. UART0_STATUS ? */
-    lastRxError = 0; /* TODO what is here equivalent to avr ? */
 
     /* calculate buffer index */
     tmphead = (UART_RxHead + 1) & UART_RX_BUFFER_MASK;
 
-    if (tmphead == UART_RxTail)
-    {
-        /* error: receive buffer overflow */
-        lastRxError = UART_BUFFER_OVERFLOW >> 8;
-    }
-    else
+    if (tmphead != UART_RxTail)
     {
         /* store new index */
         UART_RxHead = tmphead;
 
-        /* store received data in buffer */
-        UART_RxBuf[tmphead] = data;
+        /* store received character in receive buffer */
+        UART_RxBuf[tmphead] = UCA0RXBUF;
     }
-    UART_LastRxError = lastRxError;
 }
 
 /*************************************************************************

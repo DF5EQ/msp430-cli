@@ -92,12 +92,6 @@ See README.md for more detailed information.
 #define UART_RX_BUFFER_SIZE 128 /* Size of the circular receive buffer, must be power of 2 */
 #define UART_TX_BUFFER_SIZE 128 /* Size of the circular transmit buffer, must be power of 2 */
 
-/* high byte error return code of uart_getc() */
-#define UART_FRAME_ERROR      0x0800 /* Framing Error by UART       */
-#define UART_OVERRUN_ERROR    0x0400 /* Overrun condition by UART   */
-#define UART_BUFFER_OVERFLOW  0x0200 /* receive ringbuffer overflow */
-#define UART_NO_DATA          0x0100 /* no receive data available   */
-
 /* ===== public constants ===== */
 
 /* ===== public variables ===== */
