@@ -367,7 +367,7 @@ Purpose: write byte to ringbuffer for transmitting via UART
 Input  : byte to be transmitted
 Returns: none
 **************************************************************************/
-int uart_putc(int data)
+int16_t uart_putc(int16_t c)
 {
 	uint16_t tmphead;
 
@@ -378,7 +378,7 @@ int uart_putc(int data)
     while (tmphead == UART_TxTail);
 
 	/* put data to transmit buffer */
-	UART_TxBuf[tmphead] = data;
+	UART_TxBuf[tmphead] = c;
 	UART_TxHead = tmphead;
 
     /* if transmit interrupt not enabled */
@@ -389,7 +389,7 @@ int uart_putc(int data)
         UCA0IE  |= UCTXIE;  /* enable transmit interrupt */
     }
 
-    return data;
+    return c;
 }
 
 /*************************************************************************
@@ -434,16 +434,14 @@ void uart_flush(void)
     )
 }
 
+/* ===== alias for public functions ===== */
+
+int putchar(int c) __attribute__((alias("uart_putc")));
+
 /*************************************************************************
 temporary wrappers
 TODO to be removed
 **************************************************************************/
-
-int putchar (int c)
-{
-    uart_putc(c);
-    return 0;
-}
 
 int getchar (void)
 {
