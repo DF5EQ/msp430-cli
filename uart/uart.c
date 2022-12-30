@@ -359,22 +359,6 @@ int16_t uart_puts(const char *s)
 }
 
 /*************************************************************************
-Purpose : determine number of bytes waiting in receive buffer
-Input   : none
-Returns : number of characters in receive buffer
-**************************************************************************/
-int16_t uart_available(void)
-{
-	uint16_t ret;
-
-    ATOMIC_BLOCK_RESTORESTATE
-    (
-        ret = (UART_RX_BUFFER_SIZE + UART_RxHead - UART_RxTail) & UART_RX_BUFFER_MASK;
-    )
-	return (int16_t)ret;
-}
-
-/*************************************************************************
 Purpose : flush characters waiting in receive buffer, ignore them.
 Input   : none
 Returns : none
