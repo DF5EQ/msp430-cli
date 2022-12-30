@@ -392,12 +392,17 @@ Purpose: transmit string to UART
 Input  : string to be transmitted
 Returns: none
 **************************************************************************/
-void uart_puts(const char *s)
+int16_t uart_puts(const char *s)
 {
+    int16_t num_char;
+
+    num_char = 0;
 	while (*s)
     {
         uart_putc(*s++);
+        num_char++;
 	}
+    return num_char;
 }
 
 /*************************************************************************
