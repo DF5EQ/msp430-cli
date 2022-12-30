@@ -351,9 +351,9 @@ int16_t uart_putc(int16_t c)
 	tmphead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
 
     /* wait for free space in buffer */
-    while (tmphead == UART_TxTail);
+    while (tmphead == UART_TxTail); // TODO avoid blocking, implement returning EOF 
 
-	/* put data to transmit buffer */
+	/* put character to transmit buffer */
 	UART_TxBuf[tmphead] = c;
 	UART_TxHead = tmphead;
 
@@ -380,7 +380,7 @@ int16_t uart_puts(const char *s)
     num_char = 0;
 	while (*s)
     {
-        uart_putc(*s++);
+        uart_putc(*s++); // TODO evaluate return value (sent character or EOF)
         num_char++;
 	}
     return num_char;
