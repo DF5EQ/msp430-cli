@@ -367,7 +367,7 @@ Purpose: write byte to ringbuffer for transmitting via UART
 Input  : byte to be transmitted
 Returns: none
 **************************************************************************/
-void uart_putc(uint8_t data)
+int uart_putc(int data)
 {
 	uint16_t tmphead;
 
@@ -388,6 +388,8 @@ void uart_putc(uint8_t data)
         UCA0IFG |= UCTXIFG; /* set transmit interrupt flag */
         UCA0IE  |= UCTXIE;  /* enable transmit interrupt */
     }
+
+    return data;
 }
 
 /*************************************************************************

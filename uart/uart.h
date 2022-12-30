@@ -109,7 +109,7 @@ int getchar (void);
 void     uart_init      (void);
 uint16_t uart_getc      (void);
 uint16_t uart_peek      (void);
-void     uart_putc      (uint8_t data);
+int      uart_putc      (int data);
 void     uart_puts      (const char *s);
 uint16_t uart_available (void);
 void     uart_flush     (void);
