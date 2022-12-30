@@ -375,7 +375,7 @@ void uart_putc(uint8_t data)
 	tmphead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
 
     /* wait for free space in buffer */
-	while (tmphead == UART_TxTail);
+    while (tmphead == UART_TxTail);
 
 	/* put data to transmit buffer */
 	UART_TxBuf[tmphead] = data;

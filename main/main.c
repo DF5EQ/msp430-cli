@@ -22,6 +22,7 @@
 #include <string.h>
 #include "system.h"
 #include "led.h"
+#include "line.h"
 #include "uart.h"
 #include "command.h"
 
@@ -68,20 +69,20 @@ static void startup(void)
 {
     puts(CLEAR_SCREEN);
     printf("\r\n");
-    printf("*----------------------------------------*\r\n");
-    printf("*         MSP-EXP430FR5969 LaunchPad     *\r\n");
-    printf("*         Command Line Interface         *\r\n");
-    printf("*----------------------------------------*\r\n");
-    printf("\n<< System Info >>\r\n");
-    printf("\tMCU:                     MSP430FR5969\r\n");
-    printf("\tFRAM:                    64kB\r\n");
-    printf("\tFRAM used:               %u\r\n", &__m_flash_size);
-    printf("\tSRAM:                    2kB\r\n");
-    printf("\tSRAM used:               %u\r\n", &__m_ram_size);
-    printf("\tMain clock (MCLK):       16MHz\r\n");
-    printf("\tSub-Main clock (SMCLK):  1MHz\r\n");
-    printf("\tSystem console baudrate: 9600bps\r\n");
-    printf("\r\n\r\n%s ", PROMPT);
+    printf("*----------------------------------------*\n\r");
+    printf("*         MSP-EXP430FR5969 LaunchPad     *\n\r");
+    printf("*         Command Line Interface         *\n\r");
+    printf("*----------------------------------------*\n\r");
+    printf("\n<< System Info >>\n\r");
+    printf("\tMCU:                     MSP430FR5969\n\r");
+    printf("\tFRAM:                    64kB\n\r");
+    printf("\tFRAM used:               %u\n\r", &__m_flash_size);
+    printf("\tSRAM:                    2kB\n\r");
+    printf("\tSRAM used:               %u\n\r", &__m_ram_size);
+    printf("\tMain clock (MCLK):       16MHz\n\r");
+    printf("\tSub-Main clock (SMCLK):  1MHz\n\r");
+    printf("\tSystem console baudrate: 9600bps\n\r");
+    printf("\n\r%s ", PROMPT);
 }
 
 /* ----- command executing: help ----- */
