@@ -458,9 +458,3 @@ int getchar (void)
     return c & 0x00ff;
 }
 
-int puts (char const *s)
-{
-    uart_puts(s);
-    return 0;
-}
-

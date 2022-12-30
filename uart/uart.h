@@ -105,7 +105,6 @@ See README.md for more detailed information.
 /* ===== public functions ===== */
 int putchar (int c);
 int getchar (void);
-int puts    (char const *s);
 
 void     uart_init      (void);
 uint16_t uart_getc      (void);
