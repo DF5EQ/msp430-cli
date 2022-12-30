@@ -215,7 +215,7 @@ int main(void)
 
     while (1)
     {
-        c = uart_getc();
+        c = getchar();
         if (c != EOF)
         {
             line_putc(c);

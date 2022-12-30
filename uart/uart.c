@@ -158,7 +158,7 @@ char* uart_gets (char* s)
 }
 
 /* ----- read character ----- */
-int uart_getc (void)
+int getchar (void)
 {
     int c;
 
