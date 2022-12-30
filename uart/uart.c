@@ -432,3 +432,29 @@ void uart_flush(void)
     )
 }
 
+/*************************************************************************
+temporary wrappers
+TODO to be removed
+**************************************************************************/
+
+int putchar (int c)
+{
+    uart_putc(c);
+    return 0;
+}
+
+int getchar (void)
+{
+    uint16_t c;
+
+    c = uart_getc();
+    c &= 0x00ff;
+    return c;
+}
+
+int puts (char const *s)
+{
+    uart_puts(s);
+    return 0;
+}
+
