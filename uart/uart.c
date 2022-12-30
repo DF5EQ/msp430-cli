@@ -73,7 +73,6 @@ __interrupt void uart_interrupt (void)
             /* store in buffer            */
             /* send echo                  */
             c = UCA0RXBUF;
-            line_putc(c);
             last_char = c;
             break;
         case 0x04:  // Vector 4: UCTXIFG
@@ -163,7 +162,9 @@ int uart_getc (void)
 {
     int c;
 
+    __bic_SR_register(GIE); // start of atomic region
     c = last_char;
     last_char = EOF;
+    __bis_SR_register(GIE); // end of atomic region
     return c;
 }

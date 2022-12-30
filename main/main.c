@@ -193,6 +193,7 @@ int main(void)
 {
     unsigned char cmd[COMMAND_STRING_LEN];
     int cmd_idx;
+    int c;
 
     int main_argc;
     char* main_argv[COMMAND_MAX_ARGC];
@@ -214,31 +215,36 @@ int main(void)
 
     while (1)
     {
-        /* line_gets returns a non-NULL pointer when a line is available */
-        if (line_gets(cmd))
+        c = uart_getc();
+        if (c != EOF)
         {
-            led_on(LED_RED);
-            led_off(LED_GREEN);
-
-            command_parse(cmd, &main_argc, main_argv);
-
-            switch (cmd_idx = command_get_index(cmd))
+            line_putc(c);
+            /* line_gets returns a non-NULL pointer when a line is available */
+            if (line_gets(cmd))
             {
-                case COMMAND_INVALID:
-                    printf("\r\nInvalid command!\r\n");
-                    break;
-                case COMMAND_MISSING:
-                    printf("\r\nMissing command!\r\n");
-                    break;
-                default:
-                    command_get_function(cmd_idx)(main_argc, main_argv);
-                    break;
+                led_on(LED_RED);
+                led_off(LED_GREEN);
+
+                command_parse(cmd, &main_argc, main_argv);
+
+                switch (cmd_idx = command_get_index(cmd))
+                {
+                    case COMMAND_INVALID:
+                        printf("\r\nInvalid command!\r\n");
+                        break;
+                    case COMMAND_MISSING:
+                        printf("\r\nMissing command!\r\n");
+                        break;
+                    default:
+                        command_get_function(cmd_idx)(main_argc, main_argv);
+                        break;
+                }
+
+                printf("\r\n%s ", PROMPT);
+
+                led_off(LED_RED);
+                led_on(LED_GREEN);
             }
-
-            printf("\r\n%s ", PROMPT);
-
-            led_off(LED_RED);
-            led_on(LED_GREEN);
         }
     }
 }
