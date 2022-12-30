@@ -214,7 +214,7 @@ int main(void)
 
     while (1)
     {
-        /* uart_gets returns a non-NULL pointer when a string is available in uart module */
+        /* line_gets returns a non-NULL pointer when a line is available */
         if (line_gets(cmd))
         {
             led_on(LED_RED);

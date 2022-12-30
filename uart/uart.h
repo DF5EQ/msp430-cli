@@ -34,5 +34,6 @@ void  uart_init(void);
 int   putchar (int byte);
 int   uart_puts (char* s);
 char* uart_gets (char* s);
+int   uart_getc (void);
 
 #endif /* UART_H_ */

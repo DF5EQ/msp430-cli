@@ -17,6 +17,7 @@
 /* ===== includes ===== */
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "uart.h"
 #include "line.h"
 
@@ -51,6 +52,7 @@ typedef enum {
 static char rx_buffer[UART_RX_BUFFER_SIZE];
 static char rx_buffer_index;
 static rx_state_t rx_state;
+static int last_char;
 
 /* ===== public variables ===== */
 
@@ -60,6 +62,8 @@ static rx_state_t rx_state;
 #pragma vector = USCI_A0_VECTOR
 __interrupt void uart_interrupt (void)
 {
+    char c;
+
     switch(UCA0IV)
     {
         case 0x00:  // Vector 0: No interrupts
@@ -68,7 +72,9 @@ __interrupt void uart_interrupt (void)
             /* read byte from serial line */
             /* store in buffer            */
             /* send echo                  */
-            line_putc(UCA0RXBUF);
+            c = UCA0RXBUF;
+            line_putc(c);
+            last_char = c;
             break;
         case 0x04:  // Vector 4: UCTXIFG
             break;
@@ -111,6 +117,8 @@ void uart_init(void)
 
     /* reset rx state machine */
     rx_state = RX_RUNNING;
+
+    last_char = EOF;
 }
 
 /* ----- send a byte ----- */
@@ -150,3 +158,12 @@ char* uart_gets (char* s)
     return NULL;
 }
 
+/* ----- read character ----- */
+int uart_getc (void)
+{
+    int c;
+
+    c = last_char;
+    last_char = EOF;
+    return c;
+}
