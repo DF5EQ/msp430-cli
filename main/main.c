@@ -30,7 +30,7 @@
 
 /* ===== private symbols ===== */
 #define COMMAND_NUM     (sizeof(command_tbl)/sizeof(command_tbl[0]))
-#define CLEAR_SCREEN    "\r\e[2J"
+#define CLEAR_SCREEN    "\e[2J"
 #define PROMPT          "msp430> "
 
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
@@ -68,22 +68,22 @@ extern volatile uint16_t __m_ram_size;
 static void startup(void)
 {
     printf("%s", CLEAR_SCREEN);
-    puts  ("\r");
-    puts  ("*----------------------------------------*\r");
-    puts  ("*         MSP-EXP430FR5969 LaunchPad     *\r");
-    puts  ("*         Command Line Interface         *\r");
-    puts  ("*----------------------------------------*\r");
-    puts  ("\r");
-    puts  ("<< System Info >>\r");
-    puts  ("  MCU:                     MSP430FR5969\r");
-    puts  ("  FRAM:                    64kB\r");
-    printf("  FRAM used:               %u\n\r", &__m_flash_size);
-    puts  ("  SRAM:                    2kB\r");
-    printf("  SRAM used:               %u\n\r", &__m_ram_size);
-    puts  ("  Main clock (MCLK):       16MHz\r");
-    puts  ("  Sub-Main clock (SMCLK):  1MHz\r");
-    puts  ("  System console baudrate: 9600bps\r");
-    puts  ("\r");
+    puts  ("");
+    puts  ("*----------------------------------------*");
+    puts  ("*         MSP-EXP430FR5969 LaunchPad     *");
+    puts  ("*         Command Line Interface         *");
+    puts  ("*----------------------------------------*");
+    puts  ("");
+    puts  ("<< System Info >>");
+    puts  ("  MCU:                     MSP430FR5969");
+    puts  ("  FRAM:                    64kB");
+    printf("  FRAM used:               %u\n", &__m_flash_size);
+    puts  ("  SRAM:                    2kB");
+    printf("  SRAM used:               %u\n", &__m_ram_size);
+    puts  ("  Main clock (MCLK):       16MHz");
+    puts  ("  Sub-Main clock (SMCLK):  1MHz");
+    puts  ("  System console baudrate: 9600bps");
+    puts  ("");
     printf("%s", PROMPT);
 }
 
@@ -92,29 +92,29 @@ static void cmd_help(int argc, char* argv[])
 {
     uint8_t i;
     /* Print all commands and description for usage */
-    printf( "\n\rPlease input command as follows:");
+    printf( "\nPlease input command as follows:");
 
     for (i = 0; i < COMMAND_NUM; i++)
     {
-        printf("\n\r\t%-8s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
+        printf("\n  %-8s: %s", command_tbl[i].Command, command_tbl[i].Command_Desc);
     }
-    printf("\n\r");
+    puts("");
 }
 
 /*----- command executing: hello ----- */
 static void cmd_hello(int argc, char* argv[])
 {
     /* Say "Hello, World!"" */
-    printf("\n\rHello, World!");
+    printf("\nHello, World!");
     if (argc == 1)
     {
-        printf("\n\rI'm Peter. You'll find me on Earth.");
+        printf("\nI'm Peter. You'll find me on Earth.");
     }
     else
     {
-        printf("\n\rI'm %s. You'll find me on Earth.", argv[1]);
+        printf("\nI'm %s. You'll find me on Earth.", argv[1]);
     }
-    printf("\n\r");
+    puts("");
 }
 
 /* ----- command executing: info ----- */
@@ -123,59 +123,59 @@ static void cmd_info(int argc, char* argv[])
     switch(argc)
     {
         case 1:
-            printf("\n\rCPU            : MSP430FR5969");
-            printf("\n\rArchitecture   : 16bit RISC Architecture");
-            printf("\n\rCPU clock      : 16MHz");
-            printf("\n\rFRAM           : 64kB");
-            printf("\n\rSRAM           : 2kB");
-            printf("\n\rADC            : 12-bit, 16 ext, 2 int channels");
-            printf("\n\rComparator     : 16 channels");
-            printf("\n\rTimer          : 2 Timer A, 7 Timer B");
-            printf("\n\rComunication   : 2 I2C/SPI/UART");
-            printf("\n\rAES            : yes");
-            printf("\n\rBSL            : UART");
-            printf("\n\rDebug interface: JTAG + Spy-Bi-wire");
+            printf("\n  CPU            : MSP430FR5969");
+            printf("\n  Architecture   : 16bit RISC Architecture");
+            printf("\n  CPU clock      : 16MHz");
+            printf("\n  FRAM           : 64kB");
+            printf("\n  SRAM           : 2kB");
+            printf("\n  ADC            : 12-bit, 16 ext, 2 int channels");
+            printf("\n  Comparator     : 16 channels");
+            printf("\n  Timer          : 2 Timer A, 7 Timer B");
+            printf("\n  Comunication   : 2 I2C/SPI/UART");
+            printf("\n  AES            : yes");
+            printf("\n  BSL            : UART");
+            printf("\n  Debug interface: JTAG + Spy-Bi-wire");
             break;
 
         case 2:
             if( strcmp(argv[1], "cpu") == 0 )
             {
-                printf("\n\rCPU      : MSP430FR5969");
-                printf("\n\rCPU clock: 16MHz");
+                printf("\n  CPU      : MSP430FR5969");
+                printf("\n  CPU clock: 16MHz");
             }
             else if( strcmp(argv[1], "arch") == 0 )
             {
-                printf("\n\rArchitecture: 16bit RISC Architecture");
+                printf("\n  Architecture: 16bit RISC Architecture");
             }
             else if( strcmp(argv[1], "mem") == 0 )
             {
-                printf("\n\rFRAM: 64kB");
-                printf("\n\rSRAM:  2kB");
+                printf("\n  FRAM: 64kB");
+                printf("\n  SRAM:  2kB");
             }
             else if( strcmp(argv[1], "peri") == 0 )
             {
-                printf("\n\rADC         : 12-bit, 16 ext, 2 int channels");
-                printf("\n\rComparator  : 16 channels");
-                printf("\n\rTimer       : 2 Timer A, 7 Timer B");
-                printf("\n\rComunication: 2 I2C/SPI/UART");
+                printf("\n  ADC         : 12-bit, 16 ext, 2 int channels");
+                printf("\n  Comparator  : 16 channels");
+                printf("\n  Timer       : 2 Timer A, 7 Timer B");
+                printf("\n  Comunication: 2 I2C/SPI/UART");
             }
             else if( strcmp(argv[1], "misc") == 0 )
             {
-                printf("\n\rAES            : yes");
-                printf("\n\rBSL            : UART");
-                printf("\n\rDebug interface: JTAG + Spy-Bi-wire");
+                printf("\n  AES            : yes");
+                printf("\n  BSL            : UART");
+                printf("\n  Debug interface: JTAG + Spy-Bi-wire");
              }
             else
             {
-                printf("\n\rInvalid argument!");           
+                printf("\n  Invalid argument!");           
             }
             break;
 
         default:
-            printf("\n\rInvalid number of arguments!");
+            printf("\n  Invalid number of arguments!");
             break;
     }
-    printf("\n\r");
+    puts("");
 }
 
 /* ----- command executing: showarg ----- */
@@ -183,10 +183,10 @@ static void cmd_showarg(int argc, char* argv[])
 {
     int i;
 
-    printf("\n\rargc: %d\n\r", argc);
+    printf("\n  argc   : %d\n", argc);
     for (i=0; i<argc; i++)
     {
-        printf("argv[%d]: %s\n\r", i, argv[i]);
+        printf("  argv[%d]: %s\n", i, argv[i]);
     }
 }
 
@@ -236,17 +236,17 @@ int main(void)
             switch (cmd_idx = command_get_index(cmd))
             {
                 case COMMAND_INVALID:
-                    printf("\n\rInvalid command!\n\r");
+                    printf("\nInvalid command!\n");
                     break;
                 case COMMAND_MISSING:
-                    printf("\n\rMissing command!\n\r");
+                    printf("\nMissing command!\n");
                     break;
                 default:
                     command_get_function(cmd_idx)(main_argc, main_argv);
                     break;
             }
 
-            printf("\n\r%s", PROMPT);
+            printf("\n%s", PROMPT);
 
             led_off(LED_RED);
             led_on(LED_GREEN);

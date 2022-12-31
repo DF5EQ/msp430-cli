@@ -337,6 +337,12 @@ int16_t uart_putc(int16_t c)
         UCA0IE  |= UCTXIE;  /* enable transmit interrupt */
     }
 
+    /* convert LF into LF/CR */
+    if(c=='\n')
+    {
+        uart_putc('\r');
+    }
+
     return c;
 }
 
