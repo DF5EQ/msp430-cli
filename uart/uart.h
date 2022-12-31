@@ -64,7 +64,7 @@ receiving a byte. The interrupt handling routines use circular buffers
 for buffering received and transmitted data.
 
 UART_RX_BUFFER_SIZE and UART_TX_BUFFER_SIZE define the size of the
-circular buffers in bytes. Note that these constants must be a power of 2.
+circular buffers in bytes. TODO Note that these constants must be a power of 2.
 
 You need to define these buffer sizes as a symbol in your compiler
 settings or in uart.h
@@ -89,7 +89,7 @@ See README.md for more detailed information.
 #define UART_BAUDRATE 9600 /* baudrate in bit per second */
 
 /* Set size of receive and transmit buffers */
-#define UART_RX_BUFFER_SIZE 128 /* Size of the circular receive buffer, must be power of 2 */
+#define UART_RX_BUFFER_SIZE 10
 #define UART_TX_BUFFER_SIZE 128 /* Size of the circular transmit buffer, must be power of 2 */
 
 /* ===== public constants ===== */

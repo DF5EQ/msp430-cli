@@ -133,12 +133,7 @@ LICENSE:
 #define UCAxMCTLW   ( UCBRSx << 8 | UCBRFx << 4 | OS16 )
 
 /* size of RX/TX buffers */
-#define UART_RX_BUFFER_MASK (UART_RX_BUFFER_SIZE - 1)
 #define UART_TX_BUFFER_MASK (UART_TX_BUFFER_SIZE - 1)
-
-#if (UART_RX_BUFFER_SIZE & UART_RX_BUFFER_MASK)
-	#error RX buffer size is not a power of 2
-#endif
 
 #if (UART_TX_BUFFER_SIZE & UART_TX_BUFFER_MASK)
 	#error TX buffer size is not a power of 2
@@ -169,7 +164,8 @@ static void uart_rx (void)
     uint16_t tmphead;
 
     /* calculate buffer index */
-    tmphead = (UART_RxHead + 1) & UART_RX_BUFFER_MASK;
+    tmphead = UART_RxHead + 1;
+    if (tmphead >= UART_RX_BUFFER_SIZE) tmphead = 0;
 
     if (tmphead != UART_RxTail)
     {
@@ -279,7 +275,8 @@ int16_t uart_getc(void)
     )
 
 	/* advance buffer index */
-	UART_RxTail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
+	UART_RxTail = UART_RxTail + 1;
+    if (UART_RxTail >= UART_RX_BUFFER_SIZE) UART_RxTail = 0;
 
 	/* return data from receive buffer */
 	return UART_RxBuf[UART_RxTail];;
