@@ -7,7 +7,7 @@ Hardware: MSP430, tested on EXP430FR5969
 License : GNU General Public License
 Usage   : see README.md
 
-Based on original library by
+Based on original avr-uart library by
     Andy Gock
     Peter Fluery
     Tim Sharpe
@@ -31,31 +31,6 @@ LICENSE:
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-*************************************************************************/
-
-/*************************************************************************
-uart_available and uart_flush functions were adapted from the Arduino
-HardwareSerial.h library by Tim Sharpe on 11 Jan 2009.
-The license info for HardwareSerial.h is as follows:
-
-  HardwareSerial.cpp - Hardware serial library for Wiring
-  Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-  Modified 23 November 2006 by David A. Mellis
 *************************************************************************/
 
 /* ===== includes ===== */
@@ -157,18 +132,6 @@ The license info for HardwareSerial.h is as follows:
 #define UCAxBRW     UCBRx
 #define UCAxMCTLW   ( UCBRSx << 8 | UCBRFx << 4 | OS16 )
 
-/* size of RX/TX buffers */
-#define UART_RX_BUFFER_MASK (UART_RX_BUFFER_SIZE - 1)
-#define UART_TX_BUFFER_MASK (UART_TX_BUFFER_SIZE - 1)
-
-#if (UART_RX_BUFFER_SIZE & UART_RX_BUFFER_MASK)
-	#error RX buffer size is not a power of 2
-#endif
-
-#if (UART_TX_BUFFER_SIZE & UART_TX_BUFFER_MASK)
-	#error TX buffer size is not a power of 2
-#endif
-
 /* ===== private constants ===== */
 
 /* ===== public constants ===== */
@@ -180,7 +143,6 @@ static volatile uint8_t UART_TxHead;
 static volatile uint8_t UART_TxTail;
 static volatile uint8_t UART_RxHead;
 static volatile uint8_t UART_RxTail;
-static volatile uint8_t UART_LastRxError;
 
 /* ===== public variables ===== */
 
@@ -193,32 +155,19 @@ Purpose : called when the UART has received a character
 static void uart_rx (void)
 {
     uint16_t tmphead;
-    uint8_t data;
-    uint8_t usr;
-    uint8_t lastRxError;
 
-    /* read UART status register and UART data register */
-    data        = UCA0RXBUF;
-    usr         = 0; /* TODO which register is here equivalent to avr's USART0_RXDATAH resp. UART0_STATUS ? */
-    lastRxError = 0; /* TODO what is here equivalent to avr ? */
+    /* pre-advance rx head */
+    tmphead = UART_RxHead + 1;
+    if (tmphead >= UART_RX_BUFFER_SIZE) tmphead = 0;
 
-    /* calculate buffer index */
-    tmphead = (UART_RxHead + 1) & UART_RX_BUFFER_MASK;
-
-    if (tmphead == UART_RxTail)
-    {
-        /* error: receive buffer overflow */
-        lastRxError = UART_BUFFER_OVERFLOW >> 8;
-    }
-    else
+    if (tmphead != UART_RxTail)
     {
         /* store new index */
         UART_RxHead = tmphead;
 
-        /* store received data in buffer */
-        UART_RxBuf[tmphead] = data;
+        /* store received character in receive buffer */
+        UART_RxBuf[tmphead] = UCA0RXBUF;
     }
-    UART_LastRxError = lastRxError;
 }
 
 /*************************************************************************
@@ -227,16 +176,15 @@ Purpose : called when the UART is ready to transmit the next byte
 **************************************************************************/
 static void uart_tx (void)
 {
-    uint16_t tmptail;
-
     if (UART_TxHead != UART_TxTail)
     {
-        /* calculate and store new buffer index */
-        tmptail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
-        UART_TxTail = tmptail;
+        /* advance tx tail */
+        UART_TxTail = UART_TxTail + 1;
+        if (UART_TxTail >= UART_TX_BUFFER_SIZE) UART_TxTail = 0;
 
-        /* get one byte from buffer and write it to UART */
-        UCA0TXBUF = UART_TxBuf[tmptail];  /* start transmission */
+        /* get one byte from tx buffer and write it to UART */
+        /* that starts transmission */
+        UCA0TXBUF = UART_TxBuf[UART_TxTail];
     }
     else
     {
@@ -290,7 +238,7 @@ void uart_init(void)
     P2SEL1 |=   BIT0 | BIT1;
     P2SEL0 &= ~(BIT0 | BIT1);
 
-    /* configure eUSCI_A0 for UART mode 9600 8N1 */
+    /* configure eUSCI_A0 for UART mode 8N1 */
     UCA0CTLW0  = UCSWRST;       /* put eUSCI in reset */
     UCA0CTLW0 |= UCSSEL__SMCLK; /* BRCLK = SMCLK */
     UCA0BRW    = UCAxBRW;       /* see SLAU367P table 30-5 */
@@ -309,8 +257,6 @@ Returns : next character from reveive buffer converted to int
 **************************************************************************/
 int16_t uart_getc(void)
 {
-	uint16_t tmptail;
-
     ATOMIC_BLOCK_RESTORESTATE
     (
         if (UART_RxHead == UART_RxTail)
@@ -320,41 +266,12 @@ int16_t uart_getc(void)
         }
     )
 
-	/* calculate / store buffer index */
-	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
-	UART_RxTail = tmptail;
+	/* advance buffer index */
+	UART_RxTail = UART_RxTail + 1;
+    if (UART_RxTail >= UART_RX_BUFFER_SIZE) UART_RxTail = 0;
 
 	/* return data from receive buffer */
-	return UART_RxBuf[tmptail];;
-}
-
-/*************************************************************************
-Purpose : return next character from receive buffer without removing it
-          from receive buffer. That is, successive calls to uart_peek()
-          will return same character, as will the next call to uart_getc()
-Input   : none
-Returns : next character from receive buffer converted to int 
-          EOF if no new character available
-**************************************************************************/
-int16_t uart_peek(void)
-{
-	uint16_t tmptail;
-	uint8_t data;
-
-    ATOMIC_BLOCK_RESTORESTATE
-    (
-        if (UART_RxHead == UART_RxTail)
-        {
-            /* no data available */
-            return EOF;
-	    }
-    )
-
-	/* calculate buffer index */
-	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
-
-	/* return data from receive buffer */
-	return UART_RxBuf[tmptail];
+	return UART_RxBuf[UART_RxTail];;
 }
 
 /*************************************************************************
@@ -366,13 +283,14 @@ int16_t uart_putc(int16_t c)
 {
 	uint16_t tmphead;
 
-	/* calculate buffer index */
-	tmphead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
+	/* pre-advance tx head */
+	tmphead = (UART_TxHead + 1);
+    if (tmphead >= UART_TX_BUFFER_SIZE) tmphead = 0;
 
     /* wait for free space in buffer */
     while (tmphead == UART_TxTail);
 
-	/* put data to transmit buffer */
+	/* put character to transmit buffer */
 	UART_TxBuf[tmphead] = c;
 	UART_TxHead = tmphead;
 
@@ -384,54 +302,13 @@ int16_t uart_putc(int16_t c)
         UCA0IE  |= UCTXIE;  /* enable transmit interrupt */
     }
 
-    return c;
-}
-
-/*************************************************************************
-Purpose : write string to transmitt buffer
-Input   : string to write
-Returns : number of written characters
-**************************************************************************/
-int16_t uart_puts(const char *s)
-{
-    int16_t num_char;
-
-    num_char = 0;
-	while (*s)
+    /* convert LF into LF/CR */
+    if(c=='\n')
     {
-        uart_putc(*s++);
-        num_char++;
-	}
-    return num_char;
-}
+        uart_putc('\r');
+    }
 
-/*************************************************************************
-Purpose : determine number of bytes waiting in receive buffer
-Input   : none
-Returns : number of characters in receive buffer
-**************************************************************************/
-int16_t uart_available(void)
-{
-	uint16_t ret;
-
-    ATOMIC_BLOCK_RESTORESTATE
-    (
-        ret = (UART_RX_BUFFER_SIZE + UART_RxHead - UART_RxTail) & UART_RX_BUFFER_MASK;
-    )
-	return (int16_t)ret;
-}
-
-/*************************************************************************
-Purpose : flush characters waiting in receive buffer, ignore them.
-Input   : none
-Returns : none
-**************************************************************************/
-void uart_flush(void)
-{
-    ATOMIC_BLOCK_RESTORESTATE
-    (
-        UART_RxHead = UART_RxTail;
-    )
+    return c;
 }
 
 /* ===== alias for public functions ===== */
