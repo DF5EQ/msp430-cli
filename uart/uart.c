@@ -176,17 +176,15 @@ Purpose : called when the UART is ready to transmit the next byte
 **************************************************************************/
 static void uart_tx (void)
 {
-    uint16_t tmptail;
-
     if (UART_TxHead != UART_TxTail)
     {
-        /* calculate and store new buffer index */
-        tmptail = (UART_TxTail + 1);
-        if (tmptail >= UART_TX_BUFFER_SIZE) tmptail = 0;
-        UART_TxTail = tmptail;
+        /* advance tx tail */
+        UART_TxTail = UART_TxTail + 1;
+        if (UART_TxTail >= UART_TX_BUFFER_SIZE) UART_TxTail = 0;
 
-        /* get one byte from buffer and write it to UART */
-        UCA0TXBUF = UART_TxBuf[tmptail];  /* start transmission */
+        /* get one byte from tx buffer and write it to UART */
+        /* that starts transmission */
+        UCA0TXBUF = UART_TxBuf[UART_TxTail];
     }
     else
     {
