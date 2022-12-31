@@ -340,24 +340,6 @@ int16_t uart_putc(int16_t c)
     return c;
 }
 
-/*************************************************************************
-Purpose : write string to transmitt buffer
-Input   : string to write
-Returns : number of written characters
-**************************************************************************/
-int16_t uart_puts(const char *s)
-{
-    int16_t num_char;
-
-    num_char = 0;
-	while (*s)
-    {
-        uart_putc(*s++); // TODO evaluate return value (sent character or EOF)
-        num_char++;
-	}
-    return num_char;
-}
-
 /* ===== alias for public functions ===== */
 
 int putchar(int c) __attribute__((alias("uart_putc")));
