@@ -323,7 +323,7 @@ int16_t uart_putc(int16_t c)
 	tmphead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
 
     /* wait for free space in buffer */
-    while (tmphead == UART_TxTail); // TODO avoid blocking, implement returning EOF 
+    while (tmphead == UART_TxTail);
 
 	/* put character to transmit buffer */
 	UART_TxBuf[tmphead] = c;
