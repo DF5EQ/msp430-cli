@@ -156,7 +156,7 @@ static void uart_rx (void)
 {
     uint16_t tmphead;
 
-    /* calculate buffer index */
+    /* pre-advance rx head */
     tmphead = UART_RxHead + 1;
     if (tmphead >= UART_RX_BUFFER_SIZE) tmphead = 0;
 
@@ -283,7 +283,7 @@ int16_t uart_putc(int16_t c)
 {
 	uint16_t tmphead;
 
-	/* calculate buffer index */
+	/* pre-advance tx head */
 	tmphead = (UART_TxHead + 1);
     if (tmphead >= UART_TX_BUFFER_SIZE) tmphead = 0;
 
