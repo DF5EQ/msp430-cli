@@ -67,13 +67,13 @@ extern volatile uint16_t __m_ram_size;
 /* ----- start ----- */
 static void startup(void)
 {
-    puts  (CLEAR_SCREEN);
-    puts  ("");
+    printf("%s", CLEAR_SCREEN);
+    puts  ("\r");
     puts  ("*----------------------------------------*\r");
     puts  ("*         MSP-EXP430FR5969 LaunchPad     *\r");
     puts  ("*         Command Line Interface         *\r");
     puts  ("*----------------------------------------*\r");
-    puts  ("");
+    puts  ("\r");
     puts  ("<< System Info >>\r");
     puts  ("  MCU:                     MSP430FR5969\r");
     puts  ("  FRAM:                    64kB\r");
@@ -83,7 +83,7 @@ static void startup(void)
     puts  ("  Main clock (MCLK):       16MHz\r");
     puts  ("  Sub-Main clock (SMCLK):  1MHz\r");
     puts  ("  System console baudrate: 9600bps\r");
-    puts  ("");
+    puts  ("\r");
     printf("%s", PROMPT);
 }
 

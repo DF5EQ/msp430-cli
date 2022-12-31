@@ -45,8 +45,6 @@ static state_t state;
 
 /* ===== public functions ===== */
 
-#define puts uart_puts /* TODO to be removed */
-
 /*************************************************************************
 Purpose: initialize line module
 Input  : none
@@ -85,11 +83,11 @@ int line_putc (char c)
                     else
                     {
                         /* update terminal */
-                        puts(CURSOR_LEFT);
-                        puts(CURSOR_SAVE);
-                        puts(DELETE_TO_LINEEND);
-                        puts(&line[position]);
-                        puts(CURSOR_RESTORE);
+                        printf("%s", CURSOR_LEFT);
+                        printf("%s", CURSOR_SAVE);
+                        printf("%s", DELETE_TO_LINEEND);
+                        printf("%s", &line[position]);
+                        printf("%s", CURSOR_RESTORE);
 
                         /* update buffer */
                         position--;
@@ -146,7 +144,7 @@ int line_putc (char c)
                     }
                     else
                     {
-                        puts(CURSOR_RIGHT);
+                        printf("%s", CURSOR_RIGHT);
                         position++;
                     }
                     state = LINE_RUNNING;
@@ -158,7 +156,7 @@ int line_putc (char c)
                     }
                     else
                     {
-                        puts(CURSOR_LEFT);
+                        printf("%s", CURSOR_LEFT);
                         position--;
                     }
                     state = LINE_RUNNING;
@@ -171,10 +169,10 @@ int line_putc (char c)
                     else
                     {
                         /* update terminal */
-                        puts(CURSOR_SAVE);
-                        puts(DELETE_TO_LINEEND);
-                        puts(&line[position+1]);
-                        puts(CURSOR_RESTORE);
+                        printf("%s", CURSOR_SAVE);
+                        printf("%s", DELETE_TO_LINEEND);
+                        printf("%s", &line[position+1]);
+                        printf("%s", CURSOR_RESTORE);
 
                         /* update line buffer */
                         strcpy(&line[position], &line[position+1]);
