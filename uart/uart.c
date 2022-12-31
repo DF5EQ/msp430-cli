@@ -7,7 +7,7 @@ Hardware: MSP430, tested on EXP430FR5969
 License : GNU General Public License
 Usage   : see README.md
 
-Based on original library by
+Based on original avr-uart library by
     Andy Gock
     Peter Fluery
     Tim Sharpe
@@ -31,31 +31,6 @@ LICENSE:
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-*************************************************************************/
-
-/*************************************************************************
-uart_available and uart_flush functions were adapted from the Arduino
-HardwareSerial.h library by Tim Sharpe on 11 Jan 2009.
-The license info for HardwareSerial.h is as follows:
-
-  HardwareSerial.cpp - Hardware serial library for Wiring
-  Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-  Modified 23 November 2006 by David A. Mellis
 *************************************************************************/
 
 /* ===== includes ===== */
