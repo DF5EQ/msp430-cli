@@ -132,13 +132,6 @@ LICENSE:
 #define UCAxBRW     UCBRx
 #define UCAxMCTLW   ( UCBRSx << 8 | UCBRFx << 4 | OS16 )
 
-/* size of RX/TX buffers */
-#define UART_TX_BUFFER_MASK (UART_TX_BUFFER_SIZE - 1)
-
-#if (UART_TX_BUFFER_SIZE & UART_TX_BUFFER_MASK)
-	#error TX buffer size is not a power of 2
-#endif
-
 /* ===== private constants ===== */
 
 /* ===== public constants ===== */
@@ -188,7 +181,8 @@ static void uart_tx (void)
     if (UART_TxHead != UART_TxTail)
     {
         /* calculate and store new buffer index */
-        tmptail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
+        tmptail = (UART_TxTail + 1);
+        if (tmptail >= UART_TX_BUFFER_SIZE) tmptail = 0;
         UART_TxTail = tmptail;
 
         /* get one byte from buffer and write it to UART */
@@ -292,7 +286,8 @@ int16_t uart_putc(int16_t c)
 	uint16_t tmphead;
 
 	/* calculate buffer index */
-	tmphead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
+	tmphead = (UART_TxHead + 1);
+    if (tmphead >= UART_TX_BUFFER_SIZE) tmphead = 0;
 
     /* wait for free space in buffer */
     while (tmphead == UART_TxTail);
