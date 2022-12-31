@@ -31,7 +31,7 @@
 /* ===== private symbols ===== */
 #define COMMAND_NUM     (sizeof(command_tbl)/sizeof(command_tbl[0]))
 #define CLEAR_SCREEN    "\r\e[2J"
-#define PROMPT          "msp430 >"
+#define PROMPT          "msp430> "
 
 #define COMMAND_LEN(x)     sizeof(x)/sizeof(*(&x[0]))
 #define COMMAND_STRING_LEN UART_RX_BUFFER_SIZE
@@ -67,22 +67,24 @@ extern volatile uint16_t __m_ram_size;
 /* ----- start ----- */
 static void startup(void)
 {
-    puts(CLEAR_SCREEN);
-    printf("\n\r");
-    printf("*----------------------------------------*\n\r");
-    printf("*         MSP-EXP430FR5969 LaunchPad     *\n\r");
-    printf("*         Command Line Interface         *\n\r");
-    printf("*----------------------------------------*\n\r");
-    printf("\n<< System Info >>\n\r");
-    printf("\tMCU:                     MSP430FR5969\n\r");
-    printf("\tFRAM:                    64kB\n\r");
-    printf("\tFRAM used:               %u\n\r", &__m_flash_size);
-    printf("\tSRAM:                    2kB\n\r");
-    printf("\tSRAM used:               %u\n\r", &__m_ram_size);
-    printf("\tMain clock (MCLK):       16MHz\n\r");
-    printf("\tSub-Main clock (SMCLK):  1MHz\n\r");
-    printf("\tSystem console baudrate: 9600bps\n\r");
-    printf("\n\r%s ", PROMPT);
+    puts  (CLEAR_SCREEN);
+    puts  ("");
+    puts  ("*----------------------------------------*\r");
+    puts  ("*         MSP-EXP430FR5969 LaunchPad     *\r");
+    puts  ("*         Command Line Interface         *\r");
+    puts  ("*----------------------------------------*\r");
+    puts  ("");
+    puts  ("<< System Info >>\r");
+    puts  ("  MCU:                     MSP430FR5969\r");
+    puts  ("  FRAM:                    64kB\r");
+    printf("  FRAM used:               %u\n\r", &__m_flash_size);
+    puts  ("  SRAM:                    2kB\r");
+    printf("  SRAM used:               %u\n\r", &__m_ram_size);
+    puts  ("  Main clock (MCLK):       16MHz\r");
+    puts  ("  Sub-Main clock (SMCLK):  1MHz\r");
+    puts  ("  System console baudrate: 9600bps\r");
+    puts  ("");
+    printf("%s", PROMPT);
 }
 
 /* ----- command executing: help ----- */
@@ -244,7 +246,7 @@ int main(void)
                     break;
             }
 
-            printf("\n\r%s ", PROMPT);
+            printf("\n\r%s", PROMPT);
 
             led_off(LED_RED);
             led_on(LED_GREEN);
